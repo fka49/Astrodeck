@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AstroDeck • Oxygen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --muted-dark:#a6b0c3;
+
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --muted-light:#4b5563;
+
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+    }
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:var(--text-dark)}
+    header{padding:20px;background:linear-gradient(180deg, rgba(10,16,32,0.9), rgba(10,16,32,0.6));border-bottom:1px solid rgba(255,255,255,0.08)}
+    header h1{margin:0;font-size:26px}
+
+    .container{max-width:900px;margin:24px auto;padding:0 20px}
+    .card{background:var(--card-dark);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px}
+    .card h2{margin-top:0;font-size:20px;color:var(--accent)}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .value{font-size:22px;font-weight:700;margin:6px 0}
+    .label{color:var(--muted-dark);font-size:14px}
+
+    .back-btn{display:inline-block;margin-top:20px;padding:10px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:inherit;cursor:pointer;text-decoration:none;font-weight:600}
+    .back-btn:hover{background:rgba(255,255,255,0.12);color:var(--accent2)}
+	html[dir="rtl"] header h1 { justify-content: flex-end; text-align: right; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">🫁 Oxygen</h1>
+  </header>
+
+  <main class="container">
+    <!-- O₂ Levels & Pressure -->
+    <div class="card">
+      <h2 id="o2-level-title">O₂ Levels & Pressure</h2>
+      <div class="grid">
+        <div>
+          <div class="value" id="o2-percent">21.0%</div>
+          <div class="label" id="o2-percent-label">Safe range: 19.5–23.5%</div>
+        </div>
+        <div>
+          <div class="value" id="o2-ppo2">21 kPa</div>
+          <div class="label" id="o2-ppo2-label">Target ppO₂: 19–23 kPa</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Electrolysis & Scrubbing -->
+    <div class="card">
+      <h2 id="generation-title">Electrolysis & Scrubbing</h2>
+      <div class="grid">
+        <div>
+          <div class="label" id="gen-status-label">Electrolysis/OGA Status</div>
+          <div class="value" id="gen-status">Normal</div>
+        </div>
+        <div>
+          <div class="label" id="scrub-status-label">CO₂ Scrubbers</div>
+          <div class="value" id="scrub-status">Normal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <h2 id="alerts-title">Alerts & Warnings</h2>
+      <div class="value" id="alert-status">None</div>
+      <div class="label" id="alert-desc">No O₂ system warnings.</div>
+    </div>
+
+    <a class="back-btn" href="Astrodeck Homepage.html" id="back-btn">← Back to Dashboard</a>
+  </main>
+
+  <script>
+    const translations = {
+      en: {
+        title:"🫁 Oxygen",
+        o2Level:"O₂ Levels & Pressure",
+        o2Range:"Safe range: 19.5–23.5%",
+        ppO2:"Target ppO₂: 19–23 kPa",
+        generation:"Electrolysis & Scrubbing",
+        genStatusLabel:"Electrolysis/OGA Status",
+        scrubStatusLabel:"CO₂ Scrubbers",
+        alerts:"Alerts & Warnings",
+        alertDesc:"No O₂ system warnings.",
+        back:"← Back to Dashboard",
+        values:{normal:"Normal", none:"None"}
+      },
+      fr: {
+        title:"🫁 Oxygène",
+        o2Level:"Niveaux d'O₂ et Pression",
+        o2Range:"Plage sûre : 19,5–23,5%",
+        ppO2:"ppO₂ cible : 19–23 kPa",
+        generation:"Électrolyse & Épuration",
+        genStatusLabel:"État de l'électrolyse/OGA",
+        scrubStatusLabel:"Épurateurs de CO₂",
+        alerts:"Alertes & Avertissements",
+        alertDesc:"Aucune alerte du système O₂.",
+        back:"← Retour au tableau de bord",
+        values:{normal:"Normal", none:"Aucun"}
+      },
+      es: {
+        title:"🫁 Oxígeno",
+        o2Level:"Niveles de O₂ y Presión",
+        o2Range:"Rango seguro: 19.5–23.5%",
+        ppO2:"ppO₂ objetivo: 19–23 kPa",
+        generation:"Electrólisis y Purificación",
+        genStatusLabel:"Estado de electrólisis/OGA",
+        scrubStatusLabel:"Depuradores de CO₂",
+        alerts:"Alertas y Advertencias",
+        alertDesc:"Sin advertencias del sistema O₂.",
+        back:"← Volver al panel",
+        values:{normal:"Normal", none:"Ninguno"}
+      },
+      ar: {
+        title:"🫁 الأكسجين",
+        o2Level:"مستويات الأكسجين والضغط",
+        o2Range:"النطاق الآمن: 19.5–23.5%",
+        ppO2:"الضغط الجزئي المستهدف: 19–23 كيلوباسكال",
+        generation:"التحليل الكهربائي والتنقية",
+        genStatusLabel:"حالة التحليل الكهربائي/OGA",
+        scrubStatusLabel:"منقّيات ثاني أكسيد الكربون",
+        alerts:"التنبيهات والتحذيرات",
+        alertDesc:"لا توجد تحذيرات في نظام الأكسجين.",
+        back:"← العودة إلى لوحة التحكم",
+        values:{normal:"طبيعي", none:"لا يوجد"}
+      }
+    };
+
+    function applyTheme(theme){
+      if(theme==="light"){
+        document.body.style.background="var(--bg-light)";
+        document.body.style.color="var(--text-light)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-light)";
+          c.style.color="var(--text-light)";
+          c.style.border="1px solid #d1d5db";
+        });
+      } else {
+        document.body.style.background="var(--bg-dark)";
+        document.body.style.color="var(--text-dark)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-dark)";
+          c.style.color="var(--text-dark)";
+          c.style.border="1px solid rgba(255,255,255,0.08)";
+        });
+      }
+    }
+
+    function applyLanguage(lang){
+      const t=translations[lang]||translations.en;
+      document.getElementById("title").textContent=t.title;
+      document.getElementById("o2-level-title").textContent=t.o2Level;
+      document.getElementById("o2-percent-label").textContent=t.o2Range;
+      document.getElementById("o2-ppo2-label").textContent=t.ppO2;
+      document.getElementById("generation-title").textContent=t.generation;
+      document.getElementById("gen-status-label").textContent=t.genStatusLabel;
+      document.getElementById("scrub-status-label").textContent=t.scrubStatusLabel;
+      document.getElementById("alerts-title").textContent=t.alerts;
+      document.getElementById("alert-desc").textContent=t.alertDesc;
+      document.getElementById("back-btn").textContent=t.back;
+
+      // Values (statuses)
+      document.getElementById("gen-status").textContent = t.values.normal;
+      document.getElementById("scrub-status").textContent = t.values.normal;
+      document.getElementById("alert-status").textContent = t.values.none;
+    }
+
+    (function init(){
+      const lang=localStorage.getItem("language")||"en";
+      const theme=localStorage.getItem("theme")||"dark";
+	document.documentElement.setAttribute('dir', (lang === 'ar') ? 'rtl' : 'ltr');
+      applyLanguage(lang);
+      applyTheme(theme);
+    })();
+  </script>
+</body>
+</html>

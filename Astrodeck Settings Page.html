@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AstroDeck • Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --input-dark:#0f172a;
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --input-light:#ffffff;
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+    }
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:var(--text-dark)}
+    header{padding:20px;background:linear-gradient(180deg, rgba(10,16,32,0.9), rgba(10,16,32,0.6));border-bottom:1px solid rgba(255,255,255,0.08)}
+    header h1{margin:0;font-size:28px}
+
+    .container{max-width:900px;margin:24px auto;padding:0 20px}
+    .section{background:var(--card-dark);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px}
+    .section h2{margin-top:0;font-size:18px;color:var(--accent)}
+    .section label{display:block;margin-bottom:8px;font-weight:600}
+    .section input, .section select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:var(--input-dark);color:var(--text-dark);margin-bottom:14px}
+    .save-btn{display:inline-block;padding:12px 20px;background:var(--accent);color:#fff;font-weight:600;border-radius:8px;border:none;cursor:pointer;transition:background .2s}
+    .save-btn:hover{background:var(--accent2)}
+
+    /* Back button style */
+    .back-btn{
+      display:inline-block;
+      margin-top:20px;
+      padding:10px 16px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:8px;
+      color:inherit;
+      font-weight:600;
+      cursor:pointer;
+      text-decoration:none;
+    }
+    .back-btn:hover{
+      background:rgba(255,255,255,0.12);
+      color:var(--accent2);
+    }
+
+    .checkbox-label {display:flex;align-items:center;gap:10px;font-weight:600;margin-top:8px;justify-content:flex-end}
+    .checkbox-label input {margin:0}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">⚙️ Settings</h1>
+  </header>
+
+  <main class="container">
+    <div class="section">
+      <h2 id="habitat-info">Habitat Information</h2>
+      <label for="habitat-name" id="label-habitat">Space Habitat Name</label>
+      <input type="text" id="habitat-name" placeholder="Enter habitat name" value="AstroDeck One">
+
+      <label for="crew-count" id="label-crew">Crew Capacity</label>
+      <input type="number" id="crew-count" min="1" value="10">
+    </div>
+
+    <div class="section">
+      <h2 id="prefs">Preferences</h2>
+      <label for="language" id="label-lang">Language</label>
+      <select id="language">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="es">Español</option>
+        <option value="ar">العربية</option>
+      </select>
+
+      <label for="theme" id="label-theme">Theme</label>
+      <select id="theme">
+        <option value="dark" selected>Dark</option>
+        <option value="light">Light</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h2 id="system-settings">System Settings</h2>
+      <div class="checkbox-label">
+        <label for="notifications" id="label-notifs">Enable Notifications</label>
+        <input type="checkbox" id="notifications" checked>
+      </div>
+    </div>
+
+    <button class="save-btn" id="save-btn" onclick="saveSettings()">Save Settings</button>
+    <!-- Proper back button with box -->
+    <a class="back-btn" id="back-btn" href="Astrodeck Homepage.html">← Back to Dashboard</a>
+  </main>
+
+  <script>
+    const translations = {
+      en: {title:"⚙️ Settings",habitatInfo:"Habitat Information",labelHabitat:"Space Habitat Name",labelCrew:"Crew Capacity",prefs:"Preferences",labelLang:"Language",labelTheme:"Theme",system:"System Settings",notifs:"Enable Notifications",save:"Save Settings",back:"← Back to Dashboard",languages:{en:"English",fr:"Français",es:"Español",ar:"العربية"},themes:{dark:"Dark",light:"Light"}},
+      fr: {title:"⚙️ Paramètres",habitatInfo:"Informations sur l'habitat",labelHabitat:"Nom de l'habitat spatial",labelCrew:"Capacité de l'équipage",prefs:"Préférences",labelLang:"Langue",labelTheme:"Thème",system:"Paramètres système",notifs:"Activer les notifications",save:"Enregistrer les paramètres",back:"← Retour au tableau de bord",languages:{en:"English",fr:"Français",es:"Español",ar:"العربية"},themes:{dark:"Sombre",light:"Clair"}},
+      es: {title:"⚙️ Configuración",habitatInfo:"Información del hábitat",labelHabitat:"Nombre del hábitat espacial",labelCrew:"Capacidad de la tripulación",prefs:"Preferencias",labelLang:"Idioma",labelTheme:"Tema",system:"Configuraciones del sistema",notifs:"Habilitar notificaciones",save:"Guardar configuración",back:"← Volver al panel",languages:{en:"English",fr:"Français",es:"Español",ar:"العربية"},themes:{dark:"Oscuro",light:"Claro"}},
+      ar: {title:"⚙️ الإعدادات",habitatInfo:"معلومات الموطن",labelHabitat:"اسم الموطن الفضائي",labelCrew:"سعة الطاقم",prefs:"التفضيلات",labelLang:"اللغة",labelTheme:"المظهر",system:"إعدادات النظام",notifs:"تفعيل الإشعارات",save:"حفظ الإعدادات",back:"← العودة إلى لوحة التحكم",languages:{en:"English",fr:"Français",es:"Español",ar:"العربية"},themes:{dark:"داكن",light:"فاتح"}}
+    };
+
+    function saveSettings(){
+      const habitatName=document.getElementById('habitat-name').value;
+      const crewCount=document.getElementById('crew-count').value;
+      const language=document.getElementById('language').value;
+      const theme=document.getElementById('theme').value;
+      const notifications=document.getElementById('notifications').checked;
+
+      localStorage.setItem('habitatName',habitatName);
+      localStorage.setItem('crewCount',crewCount);
+      localStorage.setItem('language',language);
+      localStorage.setItem('theme',theme);
+      localStorage.setItem('notifications',notifications);
+
+      applyTheme(theme);
+      applyLanguage(language);
+      alert('Settings saved successfully!');
+    }
+
+    function applyTheme(theme){
+      if(theme==='light'){
+        document.body.style.background='var(--bg-light)';
+        document.body.style.color='var(--text-light)';
+        document.querySelectorAll('.section').forEach(s=>{s.style.background='var(--card-light)';s.style.color='var(--text-light)'});
+        document.querySelectorAll('input, select').forEach(el=>{el.style.background='var(--input-light)';el.style.color='var(--text-light)';el.style.border='1px solid #d1d5db'});
+      }else{
+        document.body.style.background='var(--bg-dark)';
+        document.body.style.color='var(--text-dark)';
+        document.querySelectorAll('.section').forEach(s=>{s.style.background='var(--card-dark)';s.style.color='var(--text-dark)'});
+        document.querySelectorAll('input, select').forEach(el=>{el.style.background='var(--input-dark)';el.style.color='var(--text-dark)';el.style.border='1px solid rgba(255,255,255,0.15)'});
+      }
+    }
+
+    function applyLanguage(lang){
+      const t=translations[lang];
+      document.getElementById('title').textContent=t.title;
+      document.getElementById('habitat-info').textContent=t.habitatInfo;
+      document.getElementById('label-habitat').textContent=t.labelHabitat;
+      document.getElementById('label-crew').textContent=t.labelCrew;
+      document.getElementById('prefs').textContent=t.prefs;
+      document.getElementById('label-lang').textContent=t.labelLang;
+      document.getElementById('label-theme').textContent=t.labelTheme;
+      document.getElementById('system-settings').textContent=t.system;
+      document.getElementById('label-notifs').textContent=t.notifs;
+      document.getElementById('save-btn').textContent=t.save;
+      document.getElementById('back-btn').textContent=t.back;
+
+      document.querySelector('#language option[value="en"]').textContent=t.languages.en;
+      document.querySelector('#language option[value="fr"]').textContent=t.languages.fr;
+      document.querySelector('#language option[value="es"]').textContent=t.languages.es;
+      document.querySelector('#language option[value="ar"]').textContent=t.languages.ar;
+
+      document.querySelector('#theme option[value="dark"]').textContent=t.themes.dark;
+      document.querySelector('#theme option[value="light"]').textContent=t.themes.light;
+    }
+
+    window.onload=()=>{
+      if(localStorage.getItem('habitatName')) document.getElementById('habitat-name').value=localStorage.getItem('habitatName');
+      if(localStorage.getItem('crewCount')) document.getElementById('crew-count').value=localStorage.getItem('crewCount');
+      if(localStorage.getItem('language')){document.getElementById('language').value=localStorage.getItem('language');applyLanguage(localStorage.getItem('language'))}
+      if(localStorage.getItem('theme')){document.getElementById('theme').value=localStorage.getItem('theme');applyTheme(localStorage.getItem('theme'))}
+      if(localStorage.getItem('notifications')) document.getElementById('notifications').checked=(localStorage.getItem('notifications')==='true');
+    }
+  </script>
+</body>
+</html>

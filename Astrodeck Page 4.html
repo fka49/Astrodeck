@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>AstroDeck • Humidity</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --muted-dark:#a6b0c3;
+
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --muted-light:#4b5563;
+
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+      --ok:#22c55e; --warn:#eab308; --bad:#ef4444;
+    }
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:var(--text-dark)}
+    header{padding:20px;background:linear-gradient(180deg, rgba(10,16,32,0.9), rgba(10,16,32,0.6));border-bottom:1px solid rgba(255,255,255,0.08)}
+    header h1{margin:0;font-size:26px;display:flex;align-items:center;gap:10px}
+    .conn-badge{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted-dark)}
+    .dot{width:10px;height:10px;border-radius:50%;background:#55607a}
+    .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
+
+    .container{max-width:900px;margin:24px auto;padding:0 20px}
+    .card{background:var(--card-dark);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px}
+    .card h2{margin-top:0;font-size:20px;color:var(--accent)}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;text-align:center}
+    .grid.two{grid-template-columns:1fr 1fr}
+    .value{font-size:22px;font-weight:700;margin:6px 0}
+    .label{color:var(--muted-dark);font-size:14px}
+    .note{font-size:13px;color:var(--muted-dark);margin-top:-4px}
+    .pill{display:inline-block;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.12);font-weight:700}
+    .pill.ok{border-color:rgba(34,197,94,.45)} .pill.low{border-color:rgba(234,179,8,.5)} .pill.high{border-color:rgba(239,68,68,.5)}
+
+    .back-btn{display:inline-block;margin-top:20px;padding:10px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:inherit;cursor:pointer;text-decoration:none;font-weight:600}
+    .back-btn:hover{background:rgba(255,255,255,0.12);color:var(--accent2)}
+
+    /* sparkline */
+    .spark{
+      width:100%; height:50px; display:block;
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:10px;
+      background:linear-gradient(180deg, rgba(0,0,0,.04), transparent);
+      margin-bottom:10px;
+    }
+
+    /* RTL / Light theme adjustments */
+    [data-theme="light"] body{background:var(--bg-light);color:var(--text-light)}
+    [data-theme="light"] .card{background:var(--card-light);color:var(--text-light);border:1px solid #d1d5db}
+    [data-theme="light"] .label,[data-theme="light"] .note{color:var(--muted-light)}
+    [data-theme="light"] .conn-badge{color:var(--muted-light)}
+	  header h1 .emoji,
+header h1 .label {
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+	</style>
+</head>
+<body>
+  <header>
+    <h1 id="title">
+  <span class="emoji">💧</span>
+  <span class="label">Humidity</span>
+      <span class="conn-badge" id="conn-badge">
+        <span class="dot" id="conn-dot"></span><span id="conn-text">Disconnected</span>
+      </span>
+    </h1>
+  </header>
+
+  <main class="container">
+    <!-- Humidity Overview -->
+    <div class="card">
+      <h2 id="humid-overview-title">Humidity Overview</h2>
+
+      <!-- tiny trend sparkline -->
+      <svg class="spark" id="spark" viewBox="0 0 500 60" preserveAspectRatio="none" aria-label="Humidity trend"></svg>
+
+      <div class="grid two">
+        <div>
+          <div class="value" id="rh-now">-- %</div>
+          <div class="label" id="rh-now-label">Current humidity</div>
+          <div class="note" id="comfort-note">(Comfort: 30–60%)</div>
+        </div>
+        <div>
+          <div class="value" id="rh-avg">-- %</div>
+          <div class="label" id="rh-avg-label">5-min average</div>
+          <div class="note" id="avg-note">(Based on recent samples)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sensors & Conditioning -->
+    <div class="card">
+      <h2 id="sens-title">Sensors & Conditioning</h2>
+      <div class="grid">
+        <div>
+          <div class="label" id="int-sens-label">Internal Sensor</div>
+          <div class="value" id="int-sens">Normal</div>
+        </div>
+        <div>
+          <div class="label" id="hvac-label">Ventilation/Dehumidifier</div>
+          <div class="value" id="hvac-state">Off</div>
+        </div>
+        <div>
+          <div class="label" id="status-label">Status</div>
+          <div class="value"><span class="pill" id="status-pill">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <h2 id="alerts-title">Alerts & Warnings</h2>
+      <div class="value" id="alert-status" style="text-align:left;">None</div>
+      <div class="label" id="alert-desc">No humidity issues detected.</div>
+    </div>
+
+    <a class="back-btn" href="Astrodeck Homepage.html" id="back-btn">← Back to Dashboard</a>
+  </main>
+
+  <!-- MQTT library injected only if needed -->
+  <script id="paho-script"></script>
+
+  <script>
+    /* ========= Translations ========= */
+    const T = {
+      en: {
+        dir:"ltr",
+        title:"💧 Humidity",
+        overview:"Humidity Overview",
+        nowLabel:"Current humidity",
+        comfortNote:(low,high)=>`(Comfort: ${low}–${high}%)`,
+        avgLabel:"5-min average",
+        avgNote:"(Based on recent samples)",
+        sensTitle:"Sensors & Conditioning",
+        intSens:"Internal Sensor",
+        hvac:"Ventilation/Dehumidifier",
+        status:"Status",
+        alerts:"Alerts & Warnings",
+        alertNone:"No humidity issues detected.",
+        none:"None", normal:"Normal", off:"Off", on:"On",
+        conn:{disc:"Disconnected", connecting:"Connecting...", conn:"Connected"},
+        statusVals:{low:"Low", ok:"Comfort", high:"High"},
+        back:"← Back to Dashboard"
+      },
+      fr: {
+        dir:"ltr",
+        title:"💧 Humidité",
+        overview:"Aperçu de l’humidité",
+        nowLabel:"Humidité actuelle",
+        comfortNote:(low,high)=>`(Confort : ${low}–${high} %)`,
+        avgLabel:"Moyenne sur 5 min",
+        avgNote:"(Basé sur des mesures récentes)",
+        sensTitle:"Capteurs & Conditionnement",
+        intSens:"Capteur interne",
+        hvac:"Ventilation/Déshumidificateur",
+        status:"État",
+        alerts:"Alertes & Avertissements",
+        alertNone:"Aucun problème d’humidité détecté.",
+        none:"Aucun", normal:"Normal", off:"Arrêt", on:"Marche",
+        conn:{disc:"Hors ligne", connecting:"Connexion…", conn:"Connecté"},
+        statusVals:{low:"Faible", ok:"Confort", high:"Élevée"},
+        back:"← Retour au tableau de bord"
+      },
+      es: {
+        dir:"ltr",
+        title:"💧 Humedad",
+        overview:"Resumen de humedad",
+        nowLabel:"Humedad actual",
+        comfortNote:(low,high)=>`(Confort: ${low}–${high} %)`,
+        avgLabel:"Promedio 5 min",
+        avgNote:"(Basado en muestras recientes)",
+        sensTitle:"Sensores y Acondicionamiento",
+        intSens:"Sensor interno",
+        hvac:"Ventilación/Deshumidificador",
+        status:"Estado",
+        alerts:"Alertas y Advertencias",
+        alertNone:"No se detectaron problemas de humedad.",
+        none:"Ninguno", normal:"Normal", off:"Apagado", on:"Encendido",
+        conn:{disc:"Desconectado", connecting:"Conectando…", conn:"Conectado"},
+        statusVals:{low:"Baja", ok:"Confort", high:"Alta"},
+        back:"← Volver al panel"
+      },
+      ar: {
+        dir:"rtl",
+        title:"💧 الرطوبة",
+        overview:"نظرة عامة على الرطوبة",
+        nowLabel:"الرطوبة الحالية",
+        comfortNote:(low,high)=>`(النطاق المريح: ٪${low}–٪${high})`,
+        avgLabel:"متوسط ٥ دقائق",
+        avgNote:"(اعتمادًا على القياسات الأخيرة)",
+        sensTitle:"المستشعرات والتهيئة",
+        intSens:"المستشعر الداخلي",
+        hvac:"التهوية/مزيل الرطوبة",
+        status:"الحالة",
+        alerts:"التنبيهات والتحذيرات",
+        alertNone:"لا توجد مشاكل في الرطوبة.",
+        none:"لا شيء", normal:"طبيعي", off:"متوقف", on:"يعمل",
+        conn:{disc:"غير متصل", connecting:"جارٍ الاتصال…", conn:"متصل"},
+        statusVals:{low:"منخفضة", ok:"مريحة", high:"مرتفعة"},
+        back:"← العودة إلى لوحة التحكم"
+      }
+    };
+
+    /* ========= Theme & Language from localStorage ========= */
+    function applyTheme(theme){
+      document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
+      if(theme==='light'){
+        document.body.style.background="var(--bg-light)";
+        document.body.style.color="var(--text-light)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-light)";
+          c.style.color="var(--text-light)";
+          c.style.border="1px solid #d1d5db";
+        });
+      } else {
+        document.body.style.background="var(--bg-dark)";
+        document.body.style.color="var(--text-dark)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-dark)";
+          c.style.color="var(--text-dark)";
+          c.style.border="1px solid rgba(255,255,255,0.08)";
+        });
+      }
+    }
+
+    function applyLanguage(lang, thresholds){
+      const tr = T[lang] || T.en;
+      document.documentElement.setAttribute("dir", tr.dir);
+      document.documentElement.setAttribute("lang", lang);
+
+      byId("title").textContent = tr.title;
+      byId("humid-overview-title").textContent = tr.overview;
+      byId("rh-now-label").textContent = tr.nowLabel;
+      byId("comfort-note").textContent = tr.comfortNote(thresholds.low, thresholds.high);
+      byId("rh-avg-label").textContent = tr.avgLabel;
+      byId("avg-note").textContent = tr.avgNote;
+
+      byId("sens-title").textContent = tr.sensTitle;
+      byId("int-sens-label").textContent = tr.intSens;
+      byId("hvac-label").textContent = tr.hvac;
+      byId("status-label").textContent = tr.status;
+
+      byId("alerts-title").textContent = tr.alerts;
+      byId("alert-desc").textContent = tr.alertNone;
+      byId("back-btn").textContent = tr.back;
+
+      // default values translated
+      byId("int-sens").textContent = tr.normal;
+      byId("hvac-state").textContent = tr.off;
+      byId("status-pill").textContent = '—';
+      byId("alert-status").textContent = tr.none;
+
+      // Align “None / لا شيء” as requested
+      byId("alert-status").style.textAlign = tr.dir === "rtl" ? "right" : "left";
+
+      // Connection text placeholder
+      setConnBadge('disc');
+    }
+
+    /* ========= Settings loader ========= */
+    function loadConn(){
+      let cfg;
+      try { cfg = JSON.parse(localStorage.getItem('astrodeckConn')||'{}'); } catch { cfg = {}; }
+      cfg.mode = cfg.mode || 'simulate';
+      cfg.thresholds = cfg.thresholds || {low:30, high:60};
+      cfg.http = cfg.http || {url:'/api/humidity', interval:3000};
+      cfg.ws = cfg.ws || {url:'ws://localhost:8080/humidity'};
+      cfg.mqtt = cfg.mqtt || {broker:'wss://test.mosquitto.org:8081/mqtt', topic:'spacehab/room1/humidity', clientId:'astro-'+Math.random().toString(16).slice(2)};
+      return cfg;
+    }
+
+    /* ========= Helpers ========= */
+    const byId = id => document.getElementById(id);
+    function setConnBadge(stateKey){
+      const lang = document.documentElement.lang || 'en';
+      const tr = T[lang] || T.en;
+      const dot = byId('conn-dot');
+      const txt = byId('conn-text');
+      if(dot) dot.className = 'dot' + (stateKey==='conn'?' ok': stateKey==='connecting'?' warn':'');
+      if(txt) txt.textContent = tr.conn[stateKey] || tr.conn.disc;
+    }
+
+    /* ========= Sparkline + Status ========= */
+    const sparkEl = byId('spark');
+    const SPARK_W = 500, SPARK_H = 60, MAX_POINTS = 80;
+    const points = [];
+    const windowVals = [];
+
+    function drawSpark(){
+      if(!sparkEl || points.length < 2) return;
+      sparkEl.innerHTML = '';
+      const ys = points.map(p=>p.y);
+      const min = Math.min(...ys), max = Math.max(...ys);
+      const span = (max - min) || 1;
+      const d = points.map((p,i)=>{
+        const x = (i/(points.length-1))*SPARK_W;
+        const y = SPARK_H - ((p.y - min)/span)*SPARK_H;
+        return `${i?'L':'M'}${x.toFixed(2)},${y.toFixed(2)}`;
+      }).join(' ');
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', d);
+      path.setAttribute('fill','none');
+      path.setAttribute('stroke','currentColor');
+      path.setAttribute('stroke-width','2');
+      sparkEl.appendChild(path);
+    }
+
+    function classify(v, thresholds){
+      if(v < thresholds.low) return 'low';
+      if(v > thresholds.high) return 'high';
+      return 'ok';
+    }
+    function setStatus(v, thresholds){
+      const lang = document.documentElement.lang || 'en';
+      const tr = T[lang] || T.en;
+      const k = classify(v, thresholds);
+      const pill = byId('status-pill');
+      pill.className = 'pill ' + (k==='ok'?'ok':k==='low'?'low':'high');
+      pill.textContent = tr.statusVals[k];
+      const alertLine = byId('alert-status');
+      const alertDesc = byId('alert-desc');
+      alertLine.textContent = (k==='ok') ? tr.none : tr.statusVals[k];
+      if(k==='low')  alertDesc.textContent = lang==='ar' ? 'الهواء جاف؛ يُنصح بالترطيب الطفيف.' : 'Air is dry; consider light humidification.';
+      if(k==='high') alertDesc.textContent = lang==='ar' ? 'رطوبة مرتفعة؛ زِد التهوية أو استخدم مزيل رطوبة.' : 'High humidity; increase ventilation or dehumidify.';
+      if(k==='ok')   alertDesc.textContent = tr.alertNone;
+    }
+
+    function onHumidity(raw, ts, thresholds){
+      const v = Math.max(0, Math.min(100, Number(raw)));
+      if(!isFinite(v)) return;
+      points.push({ t: ts || Date.now(), y: v });
+      if(points.length > MAX_POINTS) points.shift();
+      windowVals.push(v);
+      if(windowVals.length > MAX_POINTS) windowVals.shift();
+
+      byId('rh-now').textContent = v.toFixed(1) + ' %';
+      const avg = windowVals.reduce((a,b)=>a+b,0)/windowVals.length;
+      byId('rh-avg').textContent = (isFinite(avg)?avg.toFixed(1):'--') + ' %';
+
+      setStatus(v, thresholds);
+      drawSpark();
+    }
+
+    /* ========= Connections ========= */
+    let simTimer=null, httpTimer=null, ws=null, mqttClient=null;
+
+    function teardown(){
+      if(simTimer) clearInterval(simTimer), simTimer=null;
+      if(httpTimer) clearInterval(httpTimer), httpTimer=null;
+      if(ws){ try{ ws.close(); }catch{} ws=null; }
+      if(mqttClient){ try{ mqttClient.disconnect(); }catch{} mqttClient=null; }
+    }
+
+    function bootConnection(cfg){
+      teardown();
+      setConnBadge('connecting');
+
+      if(cfg.mode==='simulate'){
+        setConnBadge('conn');
+        let base = 45 + Math.random()*8;
+        simTimer = setInterval(()=>{
+          base += (Math.random()-0.5)*1.1;
+          const v = base + Math.sin(Date.now()/7000)*3 + (Math.random()-0.5)*1.2;
+          onHumidity(v, Date.now(), cfg.thresholds);
+        }, 1200);
+        return;
+      }
+
+      if(cfg.mode==='http'){
+        const tick = async ()=>{
+          try{
+            const r = await fetch(cfg.http.url, {cache:'no-store'});
+            if(!r.ok) throw new Error(r.status);
+            const j = await r.json(); // {relativeHumidity:number, ts?:number}
+            onHumidity(j.relativeHumidity, j.ts, cfg.thresholds);
+            setConnBadge('conn');
+          }catch(e){ setConnBadge('disc'); }
+        };
+        tick();
+        httpTimer = setInterval(tick, Math.max(500, cfg.http.interval||3000));
+        return;
+      }
+
+      if(cfg.mode==='websocket'){
+        try{
+          ws = new WebSocket(cfg.ws.url);
+          ws.onopen = ()=> setConnBadge('conn');
+          ws.onclose= ()=> setConnBadge('disc');
+          ws.onerror= ()=> setConnBadge('disc');
+          ws.onmessage = ev=>{
+            try{
+              const j = JSON.parse(ev.data);
+              if(typeof j.relativeHumidity==='number'){
+                onHumidity(j.relativeHumidity, j.ts, cfg.thresholds);
+              }
+            }catch{}
+          };
+        }catch{ setConnBadge('disc'); }
+        return;
+      }
+
+      if(cfg.mode==='mqtt'){
+        const ensurePaho = ()=> new Promise((res,rej)=>{
+          if(window.Paho) return res();
+          const s = document.getElementById('paho-script');
+          s.onload = ()=> res();
+          s.onerror= ()=> rej(new Error('paho load failed'));
+          s.src = 'https://unpkg.com/paho-mqtt@1.1.0/paho-mqtt-min.js';
+        });
+        ensurePaho().then(()=>{
+          mqttClient = new Paho.Client(cfg.mqtt.broker, cfg.mqtt.clientId);
+          mqttClient.onConnectionLost = ()=> setConnBadge('disc');
+          mqttClient.onMessageArrived = (m)=>{
+            try{
+              const j = JSON.parse(m.payloadString);
+              if(typeof j.relativeHumidity==='number'){
+                onHumidity(j.relativeHumidity, j.ts, cfg.thresholds);
+              }
+            }catch{}
+          };
+          mqttClient.connect({
+            timeout:5, useSSL: cfg.mqtt.broker.startsWith('wss://'),
+            onSuccess:()=>{ setConnBadge('conn'); mqttClient.subscribe(cfg.mqtt.topic); },
+            onFailure:()=> setConnBadge('disc')
+          });
+        }).catch(()=> setConnBadge('disc'));
+        return;
+      }
+    }
+
+    /* ========= Init ========= */
+    (function init(){
+      const lang  = localStorage.getItem("language") || "en";
+      const theme = localStorage.getItem("theme") || "dark";
+      const conn  = loadConn();
+
+      applyTheme(theme);
+      applyLanguage(lang, conn.thresholds);
+      setConnBadge('disc');
+
+      bootConnection(conn);
+    })();
+  </script>
+</body>
+</html>
+

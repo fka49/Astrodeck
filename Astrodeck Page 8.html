@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>AstroDeck • Power</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --muted-dark:#a6b0c3;
+
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --muted-light:#4b5563;
+
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+
+      --ok:#3be173;
+      --warn:#ffbb33;
+      --low:#ff5b5b;
+    }
+
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:var(--text-dark)}
+    header{padding:20px;background:linear-gradient(180deg,rgba(10,16,32,0.9),rgba(10,16,32,0.6));border-bottom:1px solid rgba(255,255,255,0.08)}
+    header h1{margin:0;font-size:26px;display:flex;align-items:center;gap:10px}
+
+    .container{max-width:900px;margin:24px auto;padding:0 20px}
+    .card{background:var(--card-dark);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px}
+    .card h2{margin-top:0;font-size:20px;color:var(--accent)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:center}
+    .value{font-size:22px;font-weight:700;margin:6px 0}
+    .label{color:var(--muted-dark);font-size:14px}
+    .note{font-size:13px;color:var(--muted-dark);margin-top:-4px}
+
+    /* battery gauge */
+    .battery{width:120px;height:140px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+    .battery svg{width:120px;height:120px;display:block}
+    .battery text{font-size:22px;fill:var(--text-dark);font-weight:700;text-anchor:middle;dominant-baseline:middle}
+    .battery circle{fill:none;stroke-width:12;stroke-linecap:round}
+    .battery .bg{stroke:rgba(255,255,255,0.12)}
+    .battery .progress{stroke:var(--accent2);transition:stroke-dashoffset .5s ease}
+
+    /* align both columns top-left so heights match */
+    .midbox{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start}
+
+    .back-btn{display:inline-block;margin-top:20px;padding:10px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:inherit;cursor:pointer;text-decoration:none;font-weight:600}
+    .back-btn:hover{background:rgba(255,255,255,0.12);color:var(--accent2)}
+
+    /* RTL + Light theme adjustments */
+    [dir="rtl"] header h1{flex-direction:row-reverse;justify-content:flex-end;text-align:right}
+    [data-theme="light"] body{background:var(--bg-light);color:var(--text-light)}
+    [data-theme="light"] .card{background:var(--card-light);color:var(--text-light);border:1px solid #d1d5db}
+    [data-theme="light"] .label,[data-theme="light"] .note{color:var(--muted-light)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">⚡ Power</h1>
+  </header>
+
+  <main class="container">
+    <!-- Power Overview -->
+    <div class="card">
+      <h2 id="pow-overview">Power Overview</h2>
+      <div class="grid">
+        <!-- Battery -->
+        <div class="midbox">
+          <div class="battery" aria-label="Battery state of charge gauge">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <!-- Background track -->
+              <circle class="bg" cx="60" cy="60" r="50"/>
+              <!-- Progress arc: start at top by rotating THIS circle only -->
+              <circle id="ring-progress" class="progress" cx="60" cy="60" r="50"
+                      transform="rotate(-90 60 60)" stroke-dasharray="314" stroke-dashoffset="314"/>
+              <!-- SOC text (upright) -->
+              <text x="60" y="64" id="battery-text">87%</text>
+            </svg>
+          </div>
+          <div class="label" id="battery-label">Battery Charge</div>
+          <div class="note" id="battery-note">(Stable)</div>
+        </div>
+
+        <!-- Net Power -->
+        <div class="midbox">
+          <div class="value" id="net">+2.4 kW</div>
+          <div class="label" id="net-label">Net Power Flow</div>
+          <div class="note" id="net-note">(Positive means charging)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sources -->
+    <div class="card">
+      <h2 id="sources-title">Sources</h2>
+      <div class="grid">
+        <div class="midbox">
+          <div class="value" id="solar">8.5 kW</div>
+          <div class="label" id="solar-label">Solar Generation</div>
+          <div class="note" id="solar-note">(Normal)</div> <!-- changed from (Nominal) -->
+        </div>
+        <div class="midbox">
+          <div class="value" id="fuel">2.1 kW</div>
+          <div class="label" id="fuel-label">Fuel Cell Output</div>
+          <div class="note" id="fuel-note">(Backup mode)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <h2 id="alerts-title">Alerts & Warnings</h2>
+      <div class="value" id="alert-status" style="text-align:left;">None</div>
+      <div class="label" id="alert-desc">Power systems operating normally.</div>
+    </div>
+
+    <a class="back-btn" href="Astrodeck Homepage.html" id="back-btn">← Back to Dashboard</a>
+  </main>
+
+  <script>
+    const translations = {
+      en:{
+        dir:"ltr",
+        title:"⚡ Power",
+        powOverview:"Power Overview",
+        batteryLabel:"Battery Charge",
+        batteryNote:"(Stable)",
+        netLabel:"Net Power Flow",
+        netNote:"(Positive means charging)",
+        sources:"Sources",
+        solarLabel:"Solar Generation", solarNote:"(Normal)",   // changed here
+        fuelLabel:"Fuel Cell Output",  fuelNote:"(Backup mode)",
+        alerts:"Alerts & Warnings",
+        alertDesc:"Power systems operating normally.",
+        back:"← Back to Dashboard",
+        values:{normal:"Normal"}
+      },
+      fr:{
+        dir:"ltr",
+        title:"⚡ Énergie",
+        powOverview:"Aperçu de l’énergie",
+        batteryLabel:"Charge de la batterie",
+        batteryNote:"(Stable)",
+        netLabel:"Flux d’énergie net",
+        netNote:"(Positif = en charge)",
+        sources:"Sources",
+        solarLabel:"Production solaire", solarNote:"(Normale)",
+        fuelLabel:"Pile à combustible",  fuelNote:"(Mode secours)",
+        alerts:"Alertes et avertissements",
+        alertDesc:"Systèmes électriques stables.",
+        back:"← Retour au tableau de bord",
+        values:{normal:"Normal"}
+      },
+      es:{
+        dir:"ltr",
+        title:"⚡ Energía",
+        powOverview:"Resumen de energía",
+        batteryLabel:"Carga de batería",
+        batteryNote:"(Estable)",
+        netLabel:"Flujo de energía neto",
+        netNote:"(Positivo = cargando)",
+        sources:"Fuentes",
+        solarLabel:"Generación solar", solarNote:"(Normal)",
+        fuelLabel:"Célula de combustible", fuelNote:"(Modo de respaldo)",
+        alerts:"Alertas y advertencias",
+        alertDesc:"Los sistemas eléctricos funcionan correctamente.",
+        back:"← Volver al panel",
+        values:{normal:"Normal"}
+      },
+      ar:{
+        dir:"rtl",
+        title:"⚡ الطاقة",
+        powOverview:"نظرة عامة على الطاقة",
+        batteryLabel:"شحن البطارية",
+        batteryNote:"(مستقر)",
+        netLabel:"الطاقة الصافية",
+        netNote:"(القيمة الموجبة تعني الشحن)",
+        sources:"مصادر الطاقة",
+        solarLabel:"الطاقة الشمسية", solarNote:"(طبيعي)",
+        fuelLabel:"خلية الوقود",    fuelNote:"(وضع احتياطي)",
+        alerts:"التنبيهات والتحذيرات",
+        alertDesc:"أنظمة الطاقة تعمل بشكل طبيعي.",
+        back:"← العودة إلى لوحة التحكم",
+        values:{normal:"طبيعي"}
+      }
+    };
+
+    function applyTheme(theme){
+      if(theme==="light"){
+        document.body.setAttribute("data-theme","light");
+        document.body.style.background="var(--bg-light)";
+        document.body.style.color="var(--text-light)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-light)";
+          c.style.color="var(--text-light)";
+          c.style.border="1px solid #d1d5db";
+        });
+        document.querySelectorAll('.label,.note').forEach(el=> el.style.color="var(--muted-light)");
+      } else {
+        document.body.setAttribute("data-theme","dark");
+        document.body.style.background="var(--bg-dark)";
+        document.body.style.color="var(--text-dark)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-dark)";
+          c.style.color="var(--text-dark)";
+          c.style.border="1px solid rgba(255,255,255,0.08)";
+        });
+        document.querySelectorAll('.label,.note').forEach(el=> el.style.color="var(--muted-dark)");
+      }
+    }
+
+    function applyLanguage(lang){
+      const L = translations[lang] || translations.en;
+      document.documentElement.setAttribute("dir", L.dir);
+      document.documentElement.setAttribute("lang", lang);
+
+      document.getElementById("title").textContent = L.title;
+      document.getElementById("pow-overview").textContent = L.powOverview;
+      document.getElementById("battery-label").textContent = L.batteryLabel;
+      document.getElementById("battery-note").textContent = L.batteryNote;
+      document.getElementById("net-label").textContent = L.netLabel;
+      document.getElementById("net-note").textContent = L.netNote;
+
+      document.getElementById("sources-title").textContent = L.sources;
+      document.getElementById("solar-label").textContent = L.solarLabel;
+      document.getElementById("solar-note").textContent = L.solarNote;
+      document.getElementById("fuel-label").textContent = L.fuelLabel;
+      document.getElementById("fuel-note").textContent = L.fuelNote;
+
+      // (Consumption section removed) — guard against nulls if older code remains
+      const conTitle = document.getElementById("consumption-title");
+      if (conTitle) conTitle.textContent = L.consumption;
+      const lifeLabel = document.getElementById("life-label");
+      if (lifeLabel) lifeLabel.textContent = L.lifeLabel;
+      const lifeNote = document.getElementById("life-note");
+      if (lifeNote) lifeNote.textContent = L.lifeNote;
+      const researchLabel = document.getElementById("research-label");
+      if (researchLabel) researchLabel.textContent = L.researchLabel;
+      const researchNote = document.getElementById("research-note");
+      if (researchNote) researchNote.textContent = L.researchNote;
+
+      document.getElementById("alerts-title").textContent = L.alerts;
+      document.getElementById("alert-desc").textContent = L.alertDesc;
+      document.getElementById("back-btn").textContent = L.back;
+
+      const st = document.getElementById("alert-status");
+      st.textContent = L.values.normal;
+      st.style.textAlign = (L.dir === "rtl") ? "right" : "left";
+    }
+
+    function colorNet(){
+      const net = document.getElementById("net");
+      const val = parseFloat(net.textContent);
+      if (isNaN(val)) return;
+      net.style.color = val > 0 ? "var(--ok)" : val < 0 ? "var(--low)" : "var(--muted-dark)";
+    }
+
+    // Use SVG attributes (reliable across browsers) for the ring
+    function updateBatteryRing(){
+      const circle = document.getElementById('ring-progress');
+      const text = document.getElementById('battery-text');
+      if(!circle || !text) return;
+
+      const pct = Math.max(0, Math.min(100, parseInt(text.textContent.replace('%',''),10) || 0));
+      const r = 50;
+      const C = 2 * Math.PI * r; // ~314.16
+
+      circle.setAttribute('stroke-dasharray', C.toFixed(2));
+      circle.setAttribute('stroke-dashoffset', (C*(1 - pct/100)).toFixed(2));
+
+      // color thresholds
+      let color = 'var(--ok)';
+      if (pct < 40) color = 'var(--low)';
+      else if (pct < 70) color = 'var(--warn)';
+      circle.setAttribute('stroke', color);
+    }
+
+    (function init(){
+      const lang  = localStorage.getItem("language") || "en";
+      const theme = localStorage.getItem("theme") || "dark";
+      applyTheme(theme);
+      applyLanguage(lang);
+      colorNet();
+      updateBatteryRing();
+    })();
+    window.addEventListener('load', updateBatteryRing);
+  </script>
+</body>
+</html>
+

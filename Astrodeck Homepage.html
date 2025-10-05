@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AstroDeck • Habitat Dashboard v1.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121a2b;
+      --muted:#a6b0c3;
+      --text:#e6ecff;
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+
+    .topbar{position:sticky;top:0;z-index:10;background:linear-gradient(180deg, rgba(10,16,32,0.9), rgba(10,16,32,0.6));backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid rgba(255,255,255,0.06);}
+    .topbar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:16px 20px}
+    .logo{display:flex;align-items:center;gap:14px;font-weight:800;letter-spacing:0.4px}
+    .logo svg{height:60px;width:auto}
+    .brand{font-size:30px}
+    .chip{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .chip > *{
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+      padding:10px 12px;border-radius:12px;color:var(--muted);font-size:12px;
+      transition:background .3s ease,color .3s ease,border-color .3s ease;
+    }
+
+    .container{max-width:1200px;margin:24px auto;padding:0 20px}
+    .hero{background:radial-gradient(1200px 500px at 10% -10%, rgba(122,162,255,0.15), transparent), linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:24px 20px;margin-bottom:20px}
+    .hero h1{font-size:28px;margin:0 0 6px 0}
+    .hero p{margin:0;color:var(--muted)}
+
+    .tiles{display:grid;grid-template-columns:repeat(3, 1fr);gap:20px}
+    .tile{display:flex;flex-direction:column;justify-content:flex-start;gap:8px;background:var(--card);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;text-decoration:none;color:var(--text);box-shadow:0 6px 16px rgba(0,0,0,0.18);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;min-height:120px}
+    .tile:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(0,0,0,0.22);border-color:rgba(122,162,255,0.35)}
+    .tile .head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+    .tile svg{width:28px;height:28px;color:var(--accent)}
+    .tile h3{margin:0;font-size:16px;letter-spacing:0.2px}
+    .tile p{margin:0;color:var(--muted);font-size:13px}
+
+    .footer{display:flex;justify-content:space-between;align-items:center;padding:14px 2px;color:var(--text);font-size:12px;margin-top:22px;position:relative}
+
+    /* Settings button style */
+    .settings-box {
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:10px;
+      padding:10px 16px;
+      font-weight:600;
+      color:var(--accent);
+      cursor:pointer;
+      box-shadow:0 4px 12px rgba(0,0,0,0.25);
+      transition:background .2s ease, color .2s ease, transform .15s ease;
+      display:flex;align-items:center;gap:6px;
+    }
+    .settings-box:hover { background:rgba(255,255,255,0.08); color:var(--accent2); transform:translateY(-2px); }
+	  .settings-box a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.settings-box a:hover {
+  color: var(--accent2);
+}
+
+    /* RTL support for Arabic */
+    [dir="rtl"] .topbar-inner,
+    [dir="rtl"] .tiles,
+    [dir="rtl"] .footer { direction: rtl; }
+    [dir="rtl"] .chip { margin-left: 0; margin-right: auto; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa2ff"/><stop offset="100%" stop-color="#19d3ff"/></linearGradient></defs>
+          <circle cx="30" cy="34" r="12" fill="url(#g)"/>
+          <path d="M6 30c6-8 26-12 44-8 4 1 5 3 4 5-1 3-6 7-16 9-16 4-29 1-32-3-1-2 0-2 0-3z" fill="none" stroke="url(#g)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M54 10l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" fill="#e6ecff"/>
+        </svg>
+        <div class="brand" id="brand">ASTRODECK</div>
+      </div>
+      <div class="chip"><div id="chip-orbit">Orbit: LEO</div></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1 id="hero-title">Habitat Status Overview</h1>
+      <p id="hero-subtitle">Select a system to open its detailed page.</p>
+    </section>
+
+    <section class="tiles">
+      <!-- Existing tiles unchanged -->
+      <a class="tile" href="Astrodeck Page 1.html">
+        <div class="head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 14a4 4 0 1 0 4 4V6a2 2 0 1 0-4 0v8z"/><path d="M10 10h4"/></svg>
+          <h3 id="tile-temp-title">Temperature & Thermal</h3></div>
+        <p id="tile-temp-desc">Cabin temperature and thermal control systems.</p>
+      </a>
+
+      <a class="tile" href="Astrodeck Page 2.html">
+        <div class="head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+          <h3 id="tile-oxygen-title">Oxygen</h3></div>
+        <p id="tile-oxygen-desc">O₂ levels, pressure, electrolysis, and CO₂ scrubbing.</p>
+      </a>
+
+      <a class="tile" href="Astrodeck Page 3.html">
+        <div class="head"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/><g fill="currentColor"><path d="M12 12 L12 6.2 L15.0 10.0 Z"/><path d="M12 12 L12 6.2 L15.0 10.0 Z" transform="rotate(120 12 12)"/><path d="M12 12 L12 6.2 L15.0 10.0 Z" transform="rotate(240 12 12)"/></g></svg>
+          <h3 id="tile-rad-title">Radiation</h3></div>
+        <p id="tile-rad-desc">Exposure, shielding and sensors.</p>
+      </a>
+
+      <a class="tile" href="Astrodeck Page 4.html">
+        <div class="head"><svg viewBox="0 0 24 24"><path d="M12 2 C12 2 6 8 6 12 a6 6 0 0 0 12 0 C18 8 12 2 12 2 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="17" r="0.9" fill="currentColor"/><circle cx="15" cy="21" r="0.9" fill="currentColor"/><path d="M9 21 L15 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3 id="tile-humidity-title">Humidity</h3></div>
+        <p id="tile-humidity-desc">Humidity overview, sensors and conditioning.</p>
+      </a>
+
+      <a class="tile" href="Astrodeck Page 5.html">
+        <div class="head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C12 2 5 9 5 14a7 7 0 0 0 14 0c0-5-7-12-7-12z"/></svg>
+          <h3 id="tile-water-title">Water</h3></div>
+        <p id="tile-water-desc">Water resources, systems and tanks.</p>
+      </a>
+
+      <a class="tile" href="Astrodeck Page 6.html">
+        <div class="head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16v8H4z"/><path d="M8 10V6h8v4"/></svg>
+          <h3 id="tile-food-title">Food Storage</h3></div>
+        <p id="tile-food-desc">Inventory overview, expiry dates and cold chain.</p>
+      </a>
+
+      <a class="tile" href="Astrodeck Page 7.html">
+        <div class="head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M6 6v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6"/><path d="M8 6V4h8v2"/></svg>
+          <h3 id="tile-waste-title">Waste & Sanitation</h3></div>
+        <p id="tile-waste-desc">Waste management, filters and water recycling.</p>
+      </a>
+
+      <a class="tile" href="Astrodeck Page 8.html">
+        <div class="head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8L21 10h-7l-1-8z"/></svg>
+          <h3 id="tile-power-title">Power</h3></div>
+        <p id="tile-power-desc">Power overview and sources.</p>
+      </a>
+
+      <a class="tile" href="Astrodeck Page 9.html">
+        <div class="head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6l4 10-10-4 6-6z"/></svg>
+          <h3 id="tile-nav-title">Navigation</h3></div>
+        <p id="tile-nav-desc">Orbital path, position overview, velocity and altitude.</p>
+      </a>
+    </section>
+
+    <footer class="footer">
+      <div id="footer-version">© AstroDeck Dashboard • v1.0</div>
+    </footer>
+  </main>
+
+  <div class="settings-box">⚙️ <a id="settings-label" href="Astrodeck Settings Page.html">Settings</a></div>
+
+  <script>
+    const t = {
+      en:{
+        dir:"ltr",
+        brand:"ASTRODECK",
+        chip:"Orbit: LEO",
+        heroTitle:"Habitat Status Overview",
+        heroSubtitle:"Select a system to open its detailed page.",
+        tiles:{
+          temp:{title:"Temperature & Thermal",desc:"Cabin temperature and thermal control systems."},
+          oxygen:{title:"Oxygen",desc:"O₂ levels, pressure, electrolysis, and CO₂ scrubbing."},
+          rad:{title:"Radiation",desc:"Exposure, shielding and sensors."},
+          humidity:{title:"Humidity",desc:"Humidity overview, sensors and conditioning."},
+          water:{title:"Water",desc:"Water resources, systems and tanks."},
+          food:{title:"Food Storage",desc:"Inventory overview, expiry dates and cold chain."},
+          waste:{title:"Waste & Sanitation",desc:"Waste management, filters and water recycling."},
+          power:{title:"Power",desc:"Power overview and sources."},
+          nav:{title:"Navigation",desc:"Orbital path, position overview, velocity and altitude."}
+        },
+        footer:"© AstroDeck Dashboard • v1.0",
+        settings:"Settings"
+      },
+      fr:{
+        dir:"ltr",
+        brand:"ASTRODECK",
+        chip:"Orbite : LEO",
+        heroTitle:"Aperçu de l’état de l’habitat",
+        heroSubtitle:"Sélectionnez un système pour ouvrir sa page détaillée.",
+        tiles:{
+          rad:{title:"Radiation",desc:"Exposition, blindage et capteurs."},
+          humidity:{title:"Humidité",desc:"Vue d’ensemble, capteurs et conditionnement."},
+          water:{title:"Eau",desc:"Ressources en eau, systèmes et réservoirs."},
+          food:{title:"Stockage des aliments",desc:"Aperçu des stocks, dates et chaîne du froid."},
+          waste:{title:"Déchets & Assainissement",desc:"Gestion des déchets, filtres et recyclage de l’eau."},
+          power:{title:"Énergie",desc:"Aperçu énergétique et sources."},
+          nav:{title:"Navigation",desc:"Orbite, position, vitesse et altitude."},
+          temp:{title:"Température & Thermique",desc:"Température de la cabine et systèmes de contrôle thermique."},
+          oxygen:{title:"Oxygène",desc:"Niveaux d’O₂, pression, électrolyse et épuration du CO₂."}
+        },
+        footer:"© Tableau de bord AstroDeck • v1.0",
+        settings:"Paramètres"
+      },
+      es:{
+        dir:"ltr",
+        brand:"ASTRODECK",
+        chip:"Órbita: LEO",
+        heroTitle:"Resumen del estado del hábitat",
+        heroSubtitle:"Selecciona un sistema para abrir su página detallada.",
+        tiles:{
+          rad:{title:"Radiación",desc:"Exposición, blindaje y sensores."},
+          humidity:{title:"Humedad",desc:"Resumen, sensores y acondicionamiento."},
+          water:{title:"Agua",desc:"Recursos hídricos, sistemas y tanques."},
+          food:{title:"Almacenamiento de alimentos",desc:"Resumen del inventario, caducidades y cadena de frío."},
+          waste:{title:"Residuos y Saneamiento",desc:"Gestión de residuos, filtros y reciclaje de agua."},
+          power:{title:"Energía",desc:"Resumen de energía y fuentes."},
+          nav:{title:"Navegación",desc:"Órbita, posición, velocidad y altitud."},
+          temp:{title:"Temperatura y Térmico",desc:"Temperatura de cabina y sistemas térmicos."},
+          oxygen:{title:"Oxígeno",desc:"Niveles de O₂, presión, electrólisis y depuración de CO₂."}
+        },
+        footer:"© Panel AstroDeck • v1.0",
+        settings:"Ajustes"
+      },
+      ar:{
+        dir:"rtl",
+        brand:"استرودك",
+        chip:"المدار: مدار منخفض",
+        heroTitle:"نظرة عامة على حالة الموطن",
+        heroSubtitle:"اختر نظامًا لفتح صفحته التفصيلية.",
+        tiles:{
+          rad:{title:"الإشعاع",desc:"التعرض، الحماية، وأجهزة الاستشعار."},
+          humidity:{title:"الرطوبة",desc:"نظرة عامة، الحساسات، والتهيئة."},
+          water:{title:"الماء",desc:"الموارد المائية، الأنظمة، والخزانات."},
+          food:{title:"تخزين الغذاء",desc:"نظرة عامة على المخزون، تواريخ الصلاحية، وسلسلة التبريد."},
+          waste:{title:"النفايات والصرف الصحي",desc:"إدارة النفايات، المرشحات، وإعادة تدوير المياه."},
+          power:{title:"الطاقة",desc:"نظرة عامة على الطاقة والمصادر."},
+          nav:{title:"الملاحة",desc:"المدار، الموقع، السرعة، والارتفاع."},
+          temp:{title:"الحرارة والنظام الحراري",desc:"درجة حرارة المقصورة وأنظمة التحكم الحراري."},
+          oxygen:{title:"الأكسجين",desc:"مستويات الأكسجين والضغط والتحليل الكهربائي وتنقية ثاني أكسيد الكربون."}
+        },
+        footer:"© لوحة تحكم استرودك • v1.0",
+        settings:"الإعدادات"
+      }
+    };
+
+    function styleChipForTheme(theme){
+      document.querySelectorAll(".chip > *").forEach(ch=>{
+        if(theme==="light"){
+          ch.style.background="rgba(0,0,0,0.05)";
+          ch.style.border="1px solid rgba(0,0,0,0.12)";
+        }else{
+          ch.style.background="rgba(255,255,255,0.08)";
+          ch.style.border="1px solid rgba(255,255,255,0.12)";
+        }
+      });
+    }
+
+    function applyTheme(theme){
+      if(theme==="light"){
+        document.documentElement.style.setProperty("--bg","#f9fafb");
+        document.documentElement.style.setProperty("--card","#ffffff");
+        document.documentElement.style.setProperty("--text","#111827");
+        document.documentElement.style.setProperty("--muted","#4b5563");
+      }else{
+        document.documentElement.style.setProperty("--bg","#0b1220");
+        document.documentElement.style.setProperty("--card","#121a2b");
+        document.documentElement.style.setProperty("--text","#e6ecff");
+        document.documentElement.style.setProperty("--muted","#a6b0c3");
+      }
+      styleChipForTheme(theme);
+    }
+
+    function applyLanguage(lang){
+      const L=t[lang]||t.en;
+      document.documentElement.setAttribute("dir",L.dir);
+      document.documentElement.setAttribute("lang",lang);
+      document.getElementById("brand").textContent=L.brand;
+      document.getElementById("chip-orbit").textContent=L.chip;
+      document.getElementById("hero-title").textContent=L.heroTitle;
+      document.getElementById("hero-subtitle").textContent=L.heroSubtitle;
+
+      const map={temp:"temp",oxygen:"oxygen",rad:"rad",humidity:"humidity",water:"water",food:"food",waste:"waste",power:"power",nav:"nav"};
+      Object.keys(map).forEach(k=>{
+        const key=map[k];
+        const tTitle=document.getElementById(`tile-${key}-title`);
+        const tDesc=document.getElementById(`tile-${key}-desc`);
+        if(tTitle)tTitle.textContent=L.tiles[k].title;
+        if(tDesc)tDesc.textContent=L.tiles[k].desc;
+      });
+
+      document.getElementById("footer-version").textContent=L.footer;
+      document.getElementById("settings-label").textContent=L.settings;
+    }
+
+    (function init(){
+      const lang=localStorage.getItem("language")||"en";
+      const theme=localStorage.getItem("theme")||"dark";
+      applyTheme(theme);
+      applyLanguage(lang);
+    })();
+  </script>
+</body>
+</html>

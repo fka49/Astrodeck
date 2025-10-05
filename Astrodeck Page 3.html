@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AstroDeck • Radiation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --muted-dark:#a6b0c3;
+
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --muted-light:#4b5563;
+
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+    }
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:var(--text-dark)}
+    header{padding:20px;background:linear-gradient(180deg, rgba(10,16,32,0.9), rgba(10,16,32,0.6));border-bottom:1px solid rgba(255,255,255,0.08)}
+    header h1{margin:0;font-size:26px;display:flex;align-items:center;gap:10px}
+
+    .container{max-width:900px;margin:24px auto;padding:0 20px}
+    .card{background:var(--card-dark);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px}
+    .card h2{margin-top:0;font-size:20px;color:var(--accent)}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;text-align:center}
+    .value{font-size:22px;font-weight:700;margin:6px 0}
+    .label{color:var(--muted-dark);font-size:14px}
+    .note{font-size:13px;color:var(--muted-dark);margin-top:-4px}
+
+    .back-btn{display:inline-block;margin-top:20px;padding:10px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:inherit;cursor:pointer;text-decoration:none;font-weight:600}
+    .back-btn:hover{background:rgba(255,255,255,0.12);color:var(--accent2)}
+
+    [dir="rtl"] header h1{flex-direction:row-reverse}
+	  html[dir="rtl"] header h1 { justify-content: flex-end; text-align: right; }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">
+      ☢️ Radiation
+    </h1>
+  </header>
+
+  <main class="container">
+    <!-- Radiation Exposure -->
+    <div class="card">
+      <h2 id="dose-overview-title">Radiation Exposure</h2>
+      <div class="grid" style="grid-template-columns:1fr 1fr;">
+        <div>
+          <div class="value" id="dose-rate">0.25 µSv/h</div>
+          <div class="label" id="dose-rate-label">Current exposure rate</div>
+          <div class="note" id="dose-rate-note">(Avg safe limit: ≤0.5 µSv/h)</div>
+        </div>
+        <div>
+          <div class="value" id="daily-dose">0.006 mSv</div>
+          <div class="label" id="daily-dose-label">Accumulated today</div>
+          <div class="note" id="daily-dose-note">(Daily safe limit: ≤1.0 mSv)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shielding & Sensors -->
+    <div class="card">
+      <h2 id="shield-sensor-title">Shielding & Sensors</h2>
+      <div class="grid">
+        <div>
+          <div class="label" id="sensor-int-label">Internal Sensor</div>
+          <div class="value" id="sensor-int">Normal</div>
+        </div>
+        <div>
+          <div class="label" id="shield-status-label">Shielding Status</div>
+          <div class="value" id="shield-status">Normal</div>
+        </div>
+        <div>
+          <div class="label" id="sensor-ext-label">External Sensor</div>
+          <div class="value" id="sensor-ext">Normal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <h2 id="alerts-title">Alerts & Warnings</h2>
+      <div class="value" id="alert-status" style="text-align:left;">None</div>
+      <div class="label" id="alert-desc">No elevated radiation levels detected.</div>
+    </div>
+
+    <a class="back-btn" href="Astrodeck Homepage.html" id="back-btn">← Back to Dashboard</a>
+  </main>
+
+  <script>
+    const translations = {
+      en: {
+        dir:"ltr",
+        title:"☢️ Radiation",
+        doseOverview:"Radiation Exposure",
+        doseRateLabel:"Current exposure rate",
+        doseRateNote:"(Avg safe limit: ≤0.5 µSv/h)",
+        dailyDoseLabel:"Accumulated today",
+        dailyDoseNote:"(Daily safe limit: ≤1.0 mSv)",
+        shieldSensor:"Shielding & Sensors",
+        shieldLabel:"Shielding Status",
+        sensorInt:"Internal Sensor",
+        sensorExt:"External Sensor",
+        alerts:"Alerts & Warnings",
+        alertDesc:"No elevated radiation levels detected.",
+        back:"← Back to Dashboard",
+        values:{normal:"Normal", none:"None"}
+      },
+      fr: {
+        dir:"ltr",
+        title:"☢️ Radiation",
+        doseOverview:"Exposition aux radiations",
+        doseRateLabel:"Taux d’exposition actuel",
+        doseRateNote:"(Limite sûre moyenne : ≤0.5 µSv/h)",
+        dailyDoseLabel:"Cumulé aujourd’hui",
+        dailyDoseNote:"(Limite quotidienne : ≤1.0 mSv)",
+        shieldSensor:"Blindage et capteurs",
+        shieldLabel:"État du blindage",
+        sensorInt:"Capteur interne",
+        sensorExt:"Capteur externe",
+        alerts:"Alertes et avertissements",
+        alertDesc:"Aucun niveau élevé de radiation détecté.",
+        back:"← Retour au tableau de bord",
+        values:{normal:"Normal", none:"Aucun"}
+      },
+      es: {
+        dir:"ltr",
+        title:"☢️ Radiación",
+        doseOverview:"Exposición a la radiación",
+        doseRateLabel:"Tasa de exposición actual",
+        doseRateNote:"(Límite seguro promedio: ≤0.5 µSv/h)",
+        dailyDoseLabel:"Acumulado hoy",
+        dailyDoseNote:"(Límite diario seguro: ≤1.0 mSv)",
+        shieldSensor:"Blindaje y Sensores",
+        shieldLabel:"Estado del blindaje",
+        sensorInt:"Sensor interno",
+        sensorExt:"Sensor externo",
+        alerts:"Alertas y Advertencias",
+        alertDesc:"No se detectaron niveles elevados de radiación.",
+        back:"← Volver al panel",
+        values:{normal:"Normal", none:"Ninguno"}
+      },
+      ar: {
+        dir:"rtl",
+        title:"☢️ الإشعاع",
+        doseOverview:"التعرض للإشعاع",
+        doseRateLabel:"معدل التعرض الحالي",
+        doseRateNote:"(الحد الآمن المتوسط: ≤0.5 µSv/h)",
+        dailyDoseLabel:"المتراكم اليوم",
+        dailyDoseNote:"(الحد الآمن اليومي: ≤1.0 mSv)",
+        shieldSensor:"الحماية وأجهزة الاستشعار",
+        shieldLabel:"حالة الحماية",
+        sensorInt:"المستشعر الداخلي",
+        sensorExt:"المستشعر الخارجي",
+        alerts:"التنبيهات والتحذيرات",
+        alertDesc:"لا توجد مستويات إشعاع مرتفعة.",
+        back:"← العودة إلى لوحة التحكم",
+        values:{normal:"طبيعي", none:"لا شيء"}
+      }
+    };
+
+    function applyTheme(theme){
+      if(theme==="light"){
+        document.body.style.background="var(--bg-light)";
+        document.body.style.color="var(--text-light)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-light)";
+          c.style.color="var(--text-light)";
+          c.style.border="1px solid #d1d5db";
+        });
+      } else {
+        document.body.style.background="var(--bg-dark)";
+        document.body.style.color="var(--text-dark)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-dark)";
+          c.style.color="var(--text-dark)";
+          c.style.border="1px solid rgba(255,255,255,0.08)";
+        });
+      }
+    }
+
+    function applyLanguage(lang){
+      const t = translations[lang] || translations.en;
+
+      document.documentElement.setAttribute("dir", t.dir);
+      document.documentElement.setAttribute("lang", lang);
+
+      document.getElementById("title").textContent = t.title;
+      document.getElementById("dose-overview-title").textContent = t.doseOverview;
+      document.getElementById("dose-rate-label").textContent = t.doseRateLabel;
+      document.getElementById("dose-rate-note").textContent = t.doseRateNote;
+      document.getElementById("daily-dose-label").textContent = t.dailyDoseLabel;
+      document.getElementById("daily-dose-note").textContent = t.dailyDoseNote;
+      document.getElementById("shield-sensor-title").textContent = t.shieldSensor;
+      document.getElementById("shield-status-label").textContent = t.shieldLabel;
+      document.getElementById("sensor-int-label").textContent = t.sensorInt;
+      document.getElementById("sensor-ext-label").textContent = t.sensorExt;
+      document.getElementById("alerts-title").textContent = t.alerts;
+      document.getElementById("alert-desc").textContent = t.alertDesc;
+      document.getElementById("back-btn").textContent = t.back;
+
+      document.getElementById("shield-status").textContent = t.values.normal;
+      document.getElementById("sensor-int").textContent = t.values.normal;
+      document.getElementById("sensor-ext").textContent = t.values.normal;
+      document.getElementById("alert-status").textContent = t.values.none;
+
+      if(t.dir === "rtl"){
+        document.getElementById("alert-status").style.textAlign = "right";
+      } else {
+        document.getElementById("alert-status").style.textAlign = "left";
+      }
+    }
+
+    (function init(){
+      const lang  = localStorage.getItem("language") || "en";
+      const theme = localStorage.getItem("theme") || "dark";
+	document.documentElement.setAttribute('dir', (lang === 'ar') ? 'rtl' : 'ltr');
+      applyLanguage(lang);
+      applyTheme(theme);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AstroDeck • Water</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --muted-dark:#a6b0c3;
+
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --muted-light:#4b5563;
+
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+    }
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:var(--text-dark)}
+    header{padding:20px;background:linear-gradient(180deg, rgba(10,16,32,0.9), rgba(10,16,32,0.6));border-bottom:1px solid rgba(255,255,255,0.08)}
+    header h1{margin:0;font-size:26px;display:flex;align-items:center;gap:10px}
+
+    .container{max-width:900px;margin:24px auto;padding:0 20px}
+    .card{background:var(--card-dark);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px}
+    .card h2{margin-top:0;font-size:20px;color:var(--accent)}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;text-align:center}
+    .value{font-size:22px;font-weight:700;margin:6px 0}
+    .label{color:var(--muted-dark);font-size:14px}
+    .note{font-size:13px;color:var(--muted-dark);margin-top:-4px}
+
+    .back-btn{display:inline-block;margin-top:20px;padding:10px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:inherit;cursor:pointer;text-decoration:none;font-weight:600}
+    .back-btn:hover{background:rgba(255,255,255,0.12);color:var(--accent2)}
+  </style>
+</head>
+<body>
+  <header>
+<h1 id="title">
+  <span class="emoji">💦</span>
+  <span class="label">Water</span>
+    </h1>
+  </header>
+
+  <main class="container">
+    <!-- Water Resources -->
+    <div class="card">
+      <h2 id="water-overview-title">Water Resources</h2>
+      <div class="grid" style="grid-template-columns:1fr 1fr;">
+        <div>
+          <div class="value" id="storage-level">1,200 L</div>
+          <div class="label" id="storage-level-label">Current storage</div>
+          <div class="note" id="storage-level-note">(Recommended range: 25–95% capacity)</div>
+        </div>
+        <div>
+          <div class="value" id="recycled-today">180 L</div>
+          <div class="label" id="recycled-today-label">Recycled today</div>
+          <div class="note" id="recycled-today-note">(Daily target: ≥150 L)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Systems & Tanks -->
+    <div class="card">
+      <h2 id="systems-title">Systems & Tanks</h2>
+      <div class="grid">
+        <div>
+          <div class="label" id="recycler-status-label">Recycler Status</div>
+          <div class="value" id="recycler-status">Normal</div>
+        </div>
+        <div>
+          <div class="label" id="potable-tank-label">Potable Tank</div>
+          <div class="value" id="potable-tank">Normal</div>
+        </div>
+        <div>
+          <div class="label" id="greywater-tank-label">Greywater Tank</div>
+          <div class="value" id="greywater-tank">Normal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <h2 id="alerts-title">Alerts & Warnings</h2>
+      <div class="value" id="alert-status" style="text-align:left;">None</div>
+      <div class="label" id="alert-desc">No water-related issues detected.</div>
+    </div>
+
+    <a class="back-btn" href="Astrodeck Homepage.html" id="back-btn">← Back to Dashboard</a>
+  </main>
+
+  <script>
+    const translations = {
+      en: {
+        dir:"ltr",
+        title:"💦 Water",
+        overview:"Water Resources",
+        storageLabel:"Current storage",
+        storageNote:"(Recommended range: 25–95% capacity)",
+        recycledLabel:"Recycled today",
+        recycledNote:"(Daily target: ≥150 L)",
+        systemsTitle:"Systems & Tanks",
+        recycler:"Recycler Status",
+        potable:"Potable Tank",
+        grey:"Greywater Tank",
+        alerts:"Alerts & Warnings",
+        alertDesc:"No water-related issues detected.",
+        back:"← Back to Dashboard",
+        values:{normal:"Normal", none:"None"}
+      },
+      fr: {
+        dir:"ltr",
+        title:"💦 Eau",
+        overview:"Ressources en eau",
+        storageLabel:"Stock actuel",
+        storageNote:"(Plage recommandée : 25–95 % de la capacité)",
+        recycledLabel:"Recyclé aujourd’hui",
+        recycledNote:"(Objectif quotidien : ≥150 L)",
+        systemsTitle:"Systèmes & Réservoirs",
+        recycler:"État du recycleur",
+        potable:"Réservoir d’eau potable",
+        grey:"Réservoir d’eaux grises",
+        alerts:"Alertes & Avertissements",
+        alertDesc:"Aucun problème lié à l’eau détecté.",
+        back:"← Retour au tableau de bord",
+        values:{normal:"Normal", none:"Aucun"}
+      },
+      es: {
+        dir:"ltr",
+        title:"💦 Agua",
+        overview:"Recursos de agua",
+        storageLabel:"Almacenamiento actual",
+        storageNote:"(Rango recomendado: 25–95 % de la capacidad)",
+        recycledLabel:"Reciclado hoy",
+        recycledNote:"(Objetivo diario: ≥150 L)",
+        systemsTitle:"Sistemas y Tanques",
+        recycler:"Estado del reciclador",
+        potable:"Tanque de agua potable",
+        grey:"Tanque de aguas grises",
+        alerts:"Alertas y Advertencias",
+        alertDesc:"No se detectaron problemas relacionados con el agua.",
+        back:"← Volver al panel",
+        values:{normal:"Normal", none:"Ninguno"}
+      },
+      ar: {
+        dir:"rtl",
+        title:"💦 الماء",
+        overview:"موارد الماء",
+        storageLabel:"المخزون الحالي",
+        storageNote:"(النطاق الموصى به: ٪25–٪95 من السعة)",
+        recycledLabel:"المعالج اليوم",
+        recycledNote:"(الهدف اليومي: ≥ 150 لترًا)",
+        systemsTitle:"الأنظمة والخزانات",
+        recycler:"حالة المعالجة",
+        potable:"خزان ماء الشرب",
+        grey:"خزان المياه الرمادية",
+        alerts:"التنبيهات والتحذيرات",
+        alertDesc:"لا توجد مشاكل متعلقة بالماء.",
+        back:"← العودة إلى لوحة التحكم",
+        values:{normal:"طبيعي", none:"لا شيء"}
+      }
+    };
+
+    function applyTheme(theme){
+      if(theme==="light"){
+        document.body.style.background="var(--bg-light)";
+        document.body.style.color="var(--text-light)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-light)";
+          c.style.color="var(--text-light)";
+          c.style.border="1px solid #d1d5db";
+        });
+      } else {
+        document.body.style.background="var(--bg-dark)";
+        document.body.style.color="var(--text-dark)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-dark)";
+          c.style.color="var(--text-dark)";
+          c.style.border="1px solid rgba(255,255,255,0.08)";
+        });
+      }
+    }
+
+    function applyLanguage(lang){
+      const t = translations[lang] || translations.en;
+
+      document.documentElement.setAttribute("dir", t.dir);
+      document.documentElement.setAttribute("lang", lang);
+
+      // titles
+      document.getElementById("title").textContent = t.title;
+      document.getElementById("water-overview-title").textContent = t.overview;
+      document.getElementById("systems-title").textContent = t.systemsTitle;
+      document.getElementById("alerts-title").textContent = t.alerts;
+
+      // labels + notes
+      document.getElementById("storage-level-label").textContent = t.storageLabel;
+      document.getElementById("storage-level-note").textContent = t.storageNote;
+      document.getElementById("recycled-today-label").textContent = t.recycledLabel;
+      document.getElementById("recycled-today-note").textContent = t.recycledNote;
+
+      document.getElementById("recycler-status-label").textContent = t.recycler;
+      document.getElementById("potable-tank-label").textContent = t.potable;
+      document.getElementById("greywater-tank-label").textContent = t.grey;
+
+      document.getElementById("alert-desc").textContent = t.alertDesc;
+      document.getElementById("back-btn").textContent = t.back;
+
+      // values
+      document.getElementById("recycler-status").textContent = t.values.normal;
+      document.getElementById("potable-tank").textContent = t.values.normal;
+      document.getElementById("greywater-tank").textContent = t.values.normal;
+      const alertStatus = document.getElementById("alert-status");
+      alertStatus.textContent = t.values.none;
+      alertStatus.style.textAlign = t.dir === "rtl" ? "right" : "left";
+    }
+
+    (function init(){
+      const lang  = localStorage.getItem("language") || "en";
+      const theme = localStorage.getItem("theme") || "dark";
+      applyLanguage(lang);
+      applyTheme(theme);
+    })();
+  </script>
+</body>
+</html>

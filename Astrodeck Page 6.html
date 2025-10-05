@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AstroDeck • Food Storage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --muted-dark:#a6b0c3;
+
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --muted-light:#4b5563;
+
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+      --ok:#3be173;
+      --soon:#ffbb33;
+    }
+
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:var(--text-dark)}
+    header{padding:20px;background:linear-gradient(180deg, rgba(10,16,32,0.9), rgba(10,16,32,0.6));border-bottom:1px solid rgba(255,255,255,0.08)}
+    header h1{margin:0;font-size:26px;display:flex;align-items:center;gap:10px}
+
+    .container{max-width:900px;margin:24px auto;padding:0 20px}
+    .card{background:var(--card-dark);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px}
+    .card h2{margin-top:0;font-size:20px;color:var(--accent)}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:center}
+    .value{font-size:22px;font-weight:700;margin:6px 0}
+    .label{color:var(--muted-dark);font-size:14px}
+    .note{font-size:13px;color:var(--muted-dark);margin-top:-4px}
+
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,0.08);text-align:left}
+    th{color:var(--accent2);font-size:14px}
+    .tag{font-weight:700}
+    .ok{color:var(--ok)}
+    .soon{color:var(--soon)}
+
+    .back-btn{display:inline-block;margin-top:20px;padding:10px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:inherit;cursor:pointer;text-decoration:none;font-weight:600}
+    .back-btn:hover{background:rgba(255,255,255,0.12);color:var(--accent2)}
+
+    /* RTL / Light theme adjustments */
+    [dir="rtl"] header h1{flex-direction:row-reverse}
+    html[dir="rtl"] header h1{justify-content:flex-end;text-align:right}
+    [data-theme="light"] body{background:var(--bg-light);color:var(--text-light)}
+    [data-theme="light"] .card{background:var(--card-light);color:var(--text-light);border:1px solid #d1d5db}
+    [data-theme="light"] .label,[data-theme="light"] .note{color:var(--muted-light)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">🍱 Food Storage</h1>
+  </header>
+
+  <main class="container">
+    <!-- Inventory Overview -->
+    <div class="card">
+      <h2 id="inv-title">Inventory Overview</h2>
+      <div class="grid">
+        <div>
+          <div class="value" id="calories">42,000 kcal</div>
+          <div class="label" id="calories-label">Calories available</div>
+          <div class="note" id="calories-note">(Recommended reserve: ≥35,000 kcal)</div>
+        </div>
+        <div>
+          <div class="value" id="days-left"><span id="days-number">5</span> <span id="days-word">days</span></div>
+          <div class="label" id="days-left-label">Estimated supply</div>
+          <div class="note" id="days-left-note">(For 10 crew members)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expiry Overview -->
+    <div class="card">
+      <h2 id="expiry-title">Expiry Overview</h2>
+      <table id="expiry-table">
+        <thead>
+          <tr>
+            <th id="th-item">Item</th>
+            <th id="th-date">Expires</th>
+            <th id="th-status">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td id="item1">Protein Packs</td><td>2025-10-20</td><td class="tag ok"   id="st-fresh">Fresh</td></tr>
+          <tr><td id="item2">Veggie Bars</td><td>2025-10-08</td><td class="tag soon" id="st-soon">Expiring Soon</td></tr>
+          <tr><td id="item3">Fruit Mix</td><td>2025-09-30</td><td class="tag ok"    id="st-expired">Fresh</td></tr>
+          <tr><td id="item4">Vitamin Packs</td><td>2025-12-20</td><td class="tag ok" id="st-fresh2">Fresh</td></tr> <!-- Added id -->
+        </tbody>
+      </table>
+      <div class="note" id="expiry-note">(Sort by date and use soon-to-expire items first)</div>
+    </div>
+
+    <!-- Cold Chain -->
+    <div class="card">
+      <h2 id="cold-title">Cold Chain</h2>
+      <div class="grid">
+        <div>
+          <div class="value" id="fridge">4°C</div>
+          <div class="label" id="fridge-label">Refrigeration</div>
+          <div class="note" id="fridge-note">(Stable)</div>
+        </div>
+        <div>
+          <div class="value" id="freezer">-18°C</div>
+          <div class="label" id="freezer-label">Freezer</div>
+          <div class="note" id="freezer-note">(Stable)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <h2 id="alerts-title">Alerts & Warnings</h2>
+      <div class="value" id="alert-status" style="text-align:left;">None</div>
+      <div class="label" id="alert-desc">No food storage issues detected.</div>
+    </div>
+
+    <a class="back-btn" href="Astrodeck Homepage.html" id="back-btn">← Back to Dashboard</a>
+  </main>
+
+  <script>
+    const translations = {
+      en:{
+        dir:"ltr",
+        title:"🍱 Food Storage",
+        inv:"Inventory Overview",
+        caloriesLabel:"Calories available",
+        caloriesNote:"(Recommended reserve: ≥35,000 kcal)",
+        daysLabel:"Estimated supply",
+        daysNote:"(For 10 crew members)",
+        daysWord:"days",
+        expiry:"Expiry Overview",
+        thItem:"Item", thDate:"Expires", thStatus:"Status",
+        status:{fresh:"Fresh", soon:"Expiring Soon"},
+        items:{item1:"Protein Packs",item2:"Veggie Bars",item3:"Fruit Mix",item4:"Vitamin Packs"},
+        expiryNote:"(Sort by date and use soon-to-expire items first)",
+        cold:"Cold Chain",
+        fridge:"Refrigeration", fridgeNote:"(Stable)",
+        freezer:"Freezer", freezerNote:"(Stable)",
+        alerts:"Alerts & Warnings",
+        alertNoneDesc:"No food storage issues detected.",
+        back:"← Back to Dashboard",
+        none:"None"
+      },
+      fr:{
+        dir:"ltr",
+        title:"🍱 Stockage des aliments",
+        inv:"Aperçu des stocks",
+        caloriesLabel:"Calories disponibles",
+        caloriesNote:"(Réserve recommandée : ≥35 000 kcal)",
+        daysLabel:"Réserve estimée",
+        daysNote:"(Pour 10 membres d’équipage)",
+        daysWord:"jours",
+        expiry:"Aperçu des dates de péremption",
+        thItem:"Article", thDate:"Expire", thStatus:"État",
+        status:{fresh:"Frais", soon:"Bientôt périmé"},
+        items:{item1:"Packs de protéines",item2:"Barres de légumes",item3:"Mélange de fruits",item4:"Packs de vitamines"},
+        expiryNote:"(Triez par date et utilisez d’abord les articles proches de la péremption)",
+        cold:"Chaîne du froid",
+        fridge:"Réfrigération", fridgeNote:"(Stable)",
+        freezer:"Congélateur", freezerNote:"(Stable)",
+        alerts:"Alertes et avertissements",
+        alertNoneDesc:"Aucun problème de stockage détecté.",
+        back:"← Retour au tableau de bord",
+        none:"Aucun"
+      },
+      es:{
+        dir:"ltr",
+        title:"🍱 Almacenamiento de alimentos",
+        inv:"Resumen del inventario",
+        caloriesLabel:"Calorías disponibles",
+        caloriesNote:"(Reserva recomendada: ≥35,000 kcal)",
+        daysLabel:"Suministro estimado",
+        daysNote:"(Para 10 tripulantes)",
+        daysWord:"días",
+        expiry:"Resumen de vencimientos",
+        thItem:"Artículo", thDate:"Vence", thStatus:"Estado",
+        status:{fresh:"Fresco", soon:"Próximo a vencer"},
+        items:{item1:"Paquetes de proteínas",item2:"Barras de vegetales",item3:"Mezcla de frutas",item4:"Paquetes de vitaminas"},
+        expiryNote:"(Ordenar por fecha y usar los próximos a vencer primero)",
+        cold:"Cadena de frío",
+        fridge:"Refrigeración", fridgeNote:"(Estable)",
+        freezer:"Congelador", freezerNote:"(Estable)",
+        alerts:"Alertas y advertencias",
+        alertNoneDesc:"No se detectaron problemas de almacenamiento de alimentos.",
+        back:"← Volver al panel",
+        none:"Ninguno"
+      },
+      ar:{
+        dir:"rtl",
+        title:"🍱 تخزين الغذاء",
+        inv:"نظرة عامة على المخزون",
+        caloriesLabel:"السعرات المتوفرة",
+        caloriesNote:"(المخزون الموصى به: ≥ 35,000 سعرة حرارية)",
+        daysLabel:"الإمداد التقديري",
+        daysNote:"(لـ 10 أفراد طاقم)",
+        daysWord:"أيام",
+        expiry:"نظرة عامة على انتهاء الصلاحية",
+        thItem:"الصنف", thDate:"ينتهي في", thStatus:"الحالة",
+        status:{fresh:"طازج", soon:"قريب الانتهاء"},
+        items:{item1:"عبوات البروتين",item2:"ألواح الخضروات",item3:"خليط الفواكه",item4:"عبوات الفيتامينات"},
+        expiryNote:"(رتِّب حسب التاريخ واستخدم القريب انتهاءً أولًا)",
+        cold:"سلسلة التبريد",
+        fridge:"التبريد", fridgeNote:"(مستقر)",
+        freezer:"المجمّد", freezerNote:"(مستقر)",
+        alerts:"التنبيهات والتحذيرات",
+        alertNoneDesc:"لا توجد مشاكل في تخزين الغذاء.",
+        back:"← العودة إلى لوحة التحكم",
+        none:"لا شيء"
+      }
+    };
+
+    function applyTheme(theme){
+      if(theme==="light"){
+        document.body.setAttribute("data-theme","light");
+        document.body.style.background="var(--bg-light)";
+        document.body.style.color="var(--text-light)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-light)";
+          c.style.color="var(--text-light)";
+          c.style.border="1px solid #d1d5db";
+        });
+        document.querySelectorAll('.label,.note').forEach(el=> el.style.color="var(--muted-light)");
+      } else {
+        document.body.setAttribute("data-theme","dark");
+        document.body.style.background="var(--bg-dark)";
+        document.body.style.color="var(--text-dark)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-dark)";
+          c.style.color="var(--text-dark)";
+          c.style.border="1px solid rgba(255,255,255,0.08)";
+        });
+        document.querySelectorAll('.label,.note').forEach(el=> el.style.color="var(--muted-dark)");
+      }
+    }
+
+    function applyLanguage(lang){
+      const L = translations[lang] || translations.en;
+
+      document.documentElement.setAttribute("dir", L.dir);
+      document.documentElement.setAttribute("lang", lang);
+
+      document.getElementById("title").textContent = L.title;
+      document.getElementById("inv-title").textContent = L.inv;
+      document.getElementById("expiry-title").textContent = L.expiry;
+      document.getElementById("cold-title").textContent = L.cold;
+      document.getElementById("alerts-title").textContent = L.alerts;
+      document.getElementById("calories-label").textContent = L.caloriesLabel;
+      document.getElementById("calories-note").textContent = L.caloriesNote;
+      document.getElementById("days-left-label").textContent = L.daysLabel;
+      document.getElementById("days-left-note").textContent = L.daysNote;
+      document.getElementById("th-item").textContent = L.thItem;
+      document.getElementById("th-date").textContent = L.thDate;
+      document.getElementById("th-status").textContent = L.thStatus;
+
+      document.getElementById("st-fresh").textContent   = L.status.fresh;
+      document.getElementById("st-soon").textContent    = L.status.soon;
+      document.getElementById("st-expired").textContent = L.status.fresh;
+      const stFresh2 = document.getElementById("st-fresh2");                 /* Added */
+      if (stFresh2) stFresh2.textContent = L.status.fresh;                   /* Added */
+
+      document.getElementById("item1").textContent = L.items.item1;
+      document.getElementById("item2").textContent = L.items.item2;
+      document.getElementById("item3").textContent = L.items.item3;
+      document.getElementById("item4").textContent = L.items.item4;
+
+      document.getElementById("fridge-label").textContent = L.fridge;
+      document.getElementById("fridge-note").textContent = L.fridgeNote;
+      document.getElementById("freezer-label").textContent = L.freezer;
+      document.getElementById("freezer-note").textContent = L.freezerNote;
+
+      document.getElementById("expiry-note").textContent = L.expiryNote;
+      document.getElementById("alert-desc").textContent = L.alertNoneDesc;
+      document.getElementById("back-btn").textContent = L.back;
+
+      const st = document.getElementById("alert-status");
+      st.textContent = L.none;
+      st.style.textAlign = (L.dir === "rtl") ? "right" : "left";
+
+      const daysWordEl = document.getElementById("days-word");
+      if (daysWordEl) daysWordEl.textContent = L.daysWord || "days";
+    }
+
+    (function init(){
+      const lang  = localStorage.getItem("language") || "en";
+      const theme = localStorage.getItem("theme") || "dark";
+      applyTheme(theme);
+      applyLanguage(lang);
+    })();
+  </script>
+</body>
+</html>
+

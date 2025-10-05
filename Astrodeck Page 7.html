@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AstroDeck • Waste & Sanitation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --muted-dark:#a6b0c3;
+
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --muted-light:#4b5563;
+
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+    }
+
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:var(--text-dark)}
+    header{padding:20px;background:linear-gradient(180deg, rgba(10,16,32,0.9), rgba(10,16,32,0.6));border-bottom:1px solid rgba(255,255,255,0.08)}
+    /* ONLY CHANGE: width:100% so RTL justify works across full row */
+    header h1{margin:0;font-size:26px;display:flex;align-items:center;gap:10px;width:100%}
+
+    .container{max-width:900px;margin:24px auto;padding:0 20px}
+    .card{background:var(--card-dark);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px}
+    .card h2{margin-top:0;font-size:20px;color:var(--accent)}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:center}
+    .value{font-size:22px;font-weight:700;margin:6px 0}
+    .label{color:var(--muted-dark);font-size:14px}
+    .note{font-size:13px;color:var(--muted-dark);margin-top:-4px}
+
+    .back-btn{display:inline-block;margin-top:20px;padding:10px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:inherit;cursor:pointer;text-decoration:none;font-weight:600}
+    .back-btn:hover{background:rgba(255,255,255,0.12);color:var(--accent2)}
+
+    /* RTL / Light theme adjustments */
+    [dir="rtl"] header h1{justify-content:flex-end;text-align:right}
+    [data-theme="light"] body{background:var(--bg-light);color:var(--text-light)}
+    [data-theme="light"] .card{background:var(--card-light);color:var(--text-light);border:1px solid #d1d5db}
+    [data-theme="light"] .label,[data-theme="light"] color:var(--muted-light)
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">🚮 Waste & Sanitation</h1>
+  </header>
+
+  <main class="container">
+    <!-- Waste Overview -->
+    <div class="card">
+      <h2 id="waste-title">Waste Management</h2>
+      <div class="grid">
+        <div>
+          <div class="value" id="tank-status" data-normal>Normal</div>
+          <div class="label" id="tank-label">Waste tanks</div>
+          <div class="note" id="tank-note">(All compartments sealed)</div>
+        </div>
+        <div>
+          <div class="value" id="bio-status" data-normal>Normal</div>
+          <div class="label" id="bio-label">Bioreactor status</div>
+          <div class="note" id="bio-note">(Recycling efficiency: 95%)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters & Water Recycling -->
+    <div class="card">
+      <h2 id="filter-title">Filters & Water Recycling</h2>
+      <div class="grid">
+        <div>
+          <div class="value" id="filter-status" data-normal>Normal</div>
+          <div class="label" id="filter-label">Filter condition</div>
+          <div class="note" id="filter-note">(Last replaced: 14 days ago)</div>
+        </div>
+        <div>
+          <div class="value" id="recycle-rate">88%</div>
+          <div class="label" id="recycle-label">Water recovery rate</div>
+          <div class="note" id="recycle-note">(Target ≥ 85%)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <h2 id="alerts-title">Alerts & Warnings</h2>
+      <div class="value" id="alert-status" style="text-align:left;">None</div>
+      <div class="label" id="alert-desc">No waste or sanitation issues detected.</div>
+    </div>
+
+    <a class="back-btn" href="Astrodeck Homepage.html" id="back-btn">← Back to Dashboard</a>
+  </main>
+
+  <script>
+    const translations = {
+      en:{
+        dir:"ltr",
+        title:"🚮 Waste & Sanitation",
+        waste:"Waste Management",
+        tank:"Waste tanks",
+        tankNote:"(All compartments sealed)",
+        bio:"Bioreactor status",
+        bioNote:"(Recycling efficiency: 95%)",
+        filters:"Filters & Water Recycling",
+        filter:"Filter condition",
+        filterNote:"(Last replaced: 14 days ago)",
+        recycle:"Water recovery rate",
+        recycleNote:"(Target ≥ 85%)",
+        alerts:"Alerts & Warnings",
+        alertDesc:"No waste or sanitation issues detected.",
+        back:"← Back to Dashboard",
+        none:"None",
+        values:{normal:"Normal"}
+      },
+      fr:{
+        dir:"ltr",
+        title:"🚮 Déchets et Assainissement",
+        waste:"Gestion des déchets",
+        tank:"Réservoirs de déchets",
+        tankNote:"(Tous les compartiments sont scellés)",
+        bio:"État du bioréacteur",
+        bioNote:"(Efficacité du recyclage : 95%)",
+        filters:"Filtres et Recyclage de l’eau",
+        filter:"État du filtre",
+        filterNote:"(Remplacé il y a 14 jours)",
+        recycle:"Taux de récupération d’eau",
+        recycleNote:"(Objectif ≥ 85%)",
+        alerts:"Alertes et avertissements",
+        alertDesc:"Aucun problème de déchets ou d’assainissement détecté.",
+        back:"← Retour au tableau de bord",
+        none:"Aucun",
+        values:{normal:"Normal"}
+      },
+      es:{
+        dir:"ltr",
+        title:"🚮 Residuos y Saneamiento",
+        waste:"Gestión de residuos",
+        tank:"Tanques de desechos",
+        tankNote:"(Todos los compartimentos sellados)",
+        bio:"Estado del biorreactor",
+        bioNote:"(Eficiencia de reciclaje: 95%)",
+        filters:"Filtros y Reciclaje de Agua",
+        filter:"Condición del filtro",
+        filterNote:"(Reemplazado hace 14 días)",
+        recycle:"Tasa de recuperación de agua",
+        recycleNote:"(Objetivo ≥ 85%)",
+        alerts:"Alertas y advertencias",
+        alertDesc:"No se detectaron problemas de residuos o saneamiento.",
+        back:"← Volver al panel",
+        none:"Ninguno",
+        values:{normal:"Normal"}
+      },
+      ar:{
+        dir:"rtl",
+        title:"🚮 النفايات والصرف الصحي",
+        waste:"إدارة النفايات",
+        tank:"خزانات النفايات",
+        tankNote:"(جميع المقصورات مغلقة بإحكام)",
+        bio:"حالة المفاعل الحيوي",
+        bioNote:"(كفاءة إعادة التدوير: 95%)",
+        filters:"المرشحات وإعادة تدوير المياه",
+        filter:"حالة المرشح",
+        filterNote:"(تم استبداله منذ 14 يومًا)",
+        recycle:"معدل استرجاع المياه",
+        recycleNote:"(الهدف ≥ 85%)",
+        alerts:"التنبيهات والتحذيرات",
+        alertDesc:"لا توجد مشاكل في النفايات أو الصرف الصحي.",
+        back:"← العودة إلى لوحة التحكم",
+        none:"لا شيء",
+        values:{normal:"طبيعي"}
+      }
+    };
+
+    function applyTheme(theme){
+      if(theme==="light"){
+        document.body.setAttribute("data-theme","light");
+        document.body.style.background="var(--bg-light)";
+        document.body.style.color="var(--text-light)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-light)";
+          c.style.color="var(--text-light)";
+          c.style.border="1px solid #d1d5db";
+        });
+        document.querySelectorAll('.label,.note').forEach(el=> el.style.color="var(--muted-light)");
+      } else {
+        document.body.setAttribute("data-theme","dark");
+        document.body.style.background="var(--bg-dark)";
+        document.body.style.color="var(--text-dark)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-dark)";
+          c.style.color="var(--text-dark)";
+          c.style.border="1px solid rgba(255,255,255,0.08)";
+        });
+        document.querySelectorAll('.label,.note').forEach(el=> el.style.color="var(--muted-dark)");
+      }
+    }
+
+    function applyLanguage(lang){
+      const L = translations[lang] || translations.en;
+
+      document.documentElement.setAttribute("dir", L.dir);
+      // Force the title to the correct side per language (keep your code)
+      const title = document.getElementById('title');
+if (title){
+  title.style.width = '100%';
+  title.style.display = 'block';                 // <- not flex
+  title.style.textAlign = (L.dir === 'rtl') ? 'right' : 'left';
+}
+      document.documentElement.setAttribute("lang", lang);
+
+      document.getElementById("title").textContent = L.title;
+      document.getElementById("waste-title").textContent = L.waste;
+      document.getElementById("tank-label").textContent = L.tank;
+      document.getElementById("tank-note").textContent = L.tankNote;
+      document.getElementById("bio-label").textContent = L.bio;
+      document.getElementById("bio-note").textContent = L.bioNote;
+      document.getElementById("filter-title").textContent = L.filters;
+      document.getElementById("filter-label").textContent = L.filter;
+      document.getElementById("filter-note").textContent = L.filterNote;
+      document.getElementById("recycle-label").textContent = L.recycle;
+      document.getElementById("recycle-note").textContent = L.recycleNote;
+      document.getElementById("alerts-title").textContent = L.alerts;
+      document.getElementById("alert-desc").textContent = L.alertDesc;
+      document.getElementById("back-btn").textContent = L.back;
+      const st = document.getElementById("alert-status");
+      st.textContent = L.none;
+      st.style.textAlign = (L.dir === "rtl") ? "right" : "left";
+
+      document.querySelectorAll('[data-normal]').forEach(el=>{
+        el.textContent = (L.values && L.values.normal) ? L.values.normal : "Normal";
+      });
+    }
+
+    (function init(){
+      const lang  = localStorage.getItem("language") || "en";
+      const theme = localStorage.getItem("theme") || "dark";
+      applyTheme(theme);
+      applyLanguage(lang);
+    })();
+  </script>
+</body>
+</html>

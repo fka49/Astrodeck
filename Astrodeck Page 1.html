@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AstroDeck • Temperature & Thermal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --muted-dark:#a6b0c3;
+
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --muted-light:#4b5563;
+
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+    }
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:var(--text-dark)}
+    header{padding:20px;background:linear-gradient(180deg, rgba(10,16,32,0.9), rgba(10,16,32,0.6));border-bottom:1px solid rgba(255,255,255,0.08)}
+    header h1{margin:0;font-size:26px}
+
+    .container{max-width:900px;margin:24px auto;padding:0 20px}
+    .card{background:var(--card-dark);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px}
+    .card h2{margin-top:0;font-size:20px;color:var(--accent)}
+
+    .value{font-size:22px;font-weight:700;margin:6px 0}
+    .label{color:var(--muted-dark);font-size:14px}
+
+    .back-btn{display:inline-block;margin-top:20px;padding:10px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:inherit;cursor:pointer;text-decoration:none;font-weight:600}
+    .back-btn:hover{background:rgba(255,255,255,0.12);color:var(--accent2)}
+	  html[dir="rtl"] header h1 { justify-content: flex-end; text-align: right; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">🌡️ Temperature & Thermal</h1>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h2 id="current-temp-title">Current Cabin Temperature</h2>
+      <div class="value" id="cabin-temp">22°C</div>
+      <div class="label" id="cabin-temp-label">Optimal range: 18–26°C</div>
+    </div>
+
+    <div class="card">
+      <h2 id="thermal-systems-title">Thermal Control Systems</h2>
+      <div class="value" id="thermal-status">Normal</div>
+      <div class="label" id="thermal-desc">Regulates heat from electronics and life support systems.</div>
+    </div>
+
+    <div class="card">
+      <h2 id="warnings-title">Alerts & Warnings</h2>
+      <div class="value" id="warning-status">None</div>
+      <div class="label" id="warning-desc">No overheating or freezing detected.</div>
+    </div>
+
+    <a class="back-btn" href="Astrodeck Homepage.html" id="back-btn">← Back to Dashboard</a>
+  </main>
+
+  <script>
+    const translations = {
+      en: {
+        title:"🌡️ Temperature & Thermal",
+        currentTemp:"Current Cabin Temperature",
+        cabinRange:"Optimal range: 18–26°C",
+        thermalSys:"Thermal Control Systems",
+        thermalStatus:"Normal",
+        thermalDesc:"Regulates heat from electronics and life support systems.",
+        warnings:"Alerts & Warnings",
+        warningStatus:"None",
+        warningDesc:"No overheating or freezing detected.",
+        back:"← Back to Dashboard"
+      },
+      fr: {
+        title:"🌡️ Température & Thermique",
+        currentTemp:"Température actuelle de la cabine",
+        cabinRange:"Plage optimale : 18–26°C",
+        thermalSys:"Systèmes de contrôle thermique",
+        thermalStatus:"Normal",
+        thermalDesc:"Régule la chaleur des systèmes électroniques et du support de vie.",
+        warnings:"Alertes & Avertissements",
+        warningStatus:"Aucun",
+        warningDesc:"Aucune surchauffe ou congélation détectée.",
+        back:"← Retour au tableau de bord"
+      },
+      es: {
+        title:"🌡️ Temperatura y Térmico",
+        currentTemp:"Temperatura actual de la cabina",
+        cabinRange:"Rango óptimo: 18–26°C",
+        thermalSys:"Sistemas de control térmico",
+        thermalStatus:"Normal",
+        thermalDesc:"Regula el calor de la electrónica y soporte vital.",
+        warnings:"Alertas y Advertencias",
+        warningStatus:"Ninguno",
+        warningDesc:"No se detecta sobrecalentamiento ni congelación.",
+        back:"← Volver al panel"
+      },
+      ar: {
+        title:"🌡️ الحرارة والنظام الحراري",
+        currentTemp:"درجة حرارة المقصورة الحالية",
+        cabinRange:"النطاق المثالي: 18–26°C",
+        thermalSys:"أنظمة التحكم الحراري",
+        thermalStatus:"طبيعي",
+        thermalDesc:"تنظم الحرارة من الأجهزة الإلكترونية وأنظمة دعم الحياة.",
+        warnings:"التنبيهات والتحذيرات",
+        warningStatus:"لا شيء",
+        warningDesc:"لم يتم اكتشاف أي ارتفاع حرارة أو تجمد.",
+        back:"← العودة إلى لوحة التحكم"
+      }
+    };
+
+    function applyTheme(theme){
+      if(theme==="light"){
+        document.body.style.background="var(--bg-light)";
+        document.body.style.color="var(--text-light)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-light)";
+          c.style.color="var(--text-light)";
+          c.style.border="1px solid #d1d5db";
+        });
+      } else {
+        document.body.style.background="var(--bg-dark)";
+        document.body.style.color="var(--text-dark)";
+        document.querySelectorAll('.card').forEach(c=>{
+          c.style.background="var(--card-dark)";
+          c.style.color="var(--text-dark)";
+          c.style.border="1px solid rgba(255,255,255,0.08)";
+        });
+      }
+    }
+
+    function applyLanguage(lang){
+      const t=translations[lang]||translations.en;
+      document.getElementById("title").textContent=t.title;
+      document.getElementById("current-temp-title").textContent=t.currentTemp;
+      document.getElementById("cabin-temp-label").textContent=t.cabinRange;
+      document.getElementById("thermal-systems-title").textContent=t.thermalSys;
+      document.getElementById("thermal-status").textContent=t.thermalStatus;
+      document.getElementById("thermal-desc").textContent=t.thermalDesc;
+      document.getElementById("warnings-title").textContent=t.warnings;
+      document.getElementById("warning-status").textContent=t.warningStatus;
+      document.getElementById("warning-desc").textContent=t.warningDesc;
+      document.getElementById("back-btn").textContent=t.back;
+    }
+
+    (function init(){
+      const lang=localStorage.getItem("language")||"en";
+      const theme=localStorage.getItem("theme")||"dark";
+	document.documentElement.setAttribute('dir', (lang === 'ar') ? 'rtl' : 'ltr');
+
+      applyLanguage(lang);
+      applyTheme(theme);
+    })();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AstroDeck • Navigation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark:#0b1220;
+      --card-dark:#121a2b;
+      --text-dark:#e6ecff;
+      --muted-dark:#a6b0c3;
+
+      --bg-light:#f9fafb;
+      --card-light:#ffffff;
+      --text-light:#111827;
+      --muted-light:#4b5563;
+
+      --accent:#7aa2ff;
+      --accent2:#19d3ff;
+    }
+
+    body {
+      margin:0;
+      font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg-dark);
+      color:var(--text-dark);
+    }
+
+    header {
+      padding:20px;
+      background:linear-gradient(180deg,rgba(10,16,32,0.9),rgba(10,16,32,0.6));
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+
+    header h1 {
+      margin:0;
+      font-size:26px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .container {
+      max-width:900px;
+      margin:24px auto;
+      padding:0 20px;
+    }
+
+    .card {
+      background:var(--card-dark);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:16px;
+      padding:20px;
+      margin-bottom:20px;
+    }
+
+    .card h2 {
+      margin-top:0;
+      font-size:20px;
+      color:var(--accent);
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      text-align:center;
+    }
+
+    .value {font-size:22px;font-weight:700;margin:6px 0;}
+    .label {color:var(--muted-dark);font-size:14px;}
+    .note {font-size:13px;color:var(--muted-dark);margin-top:-4px;}
+
+    /* Orbit visualization */
+    .orbit-container {
+      width:300px;
+      height:300px;
+      margin:0 auto;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+    .orbit-svg {width:260px;height:260px;display:block;}
+
+    .back-btn {
+      display:inline-block;
+      margin-top:20px;
+      padding:10px 16px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:8px;
+      color:inherit;
+      cursor:pointer;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .back-btn:hover {background:rgba(255,255,255,0.12);color:var(--accent2);}
+
+    /* RTL + Light theme adjustments */
+    [dir="rtl"] header h1 {flex-direction:row-reverse;justify-content:flex-end;text-align:right;}
+    [data-theme="light"] body {background:var(--bg-light);color:var(--text-light);}
+    [data-theme="light"] .card {background:var(--card-light);color:var(--text-light);border:1px solid #d1d5db;}
+    [data-theme="light"] .label,[data-theme="light"] .note {color:var(--muted-light);}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">🧭 Navigation</h1>
+  </header>
+
+  <main class="container">
+    <!-- Orbit Visualization -->
+    <div class="card" style="text-align:center">
+      <h2 id="orbit-title">Orbital Path</h2>
+      <div class="orbit-container">
+        <svg viewBox="0 0 300 300" class="orbit-svg">
+          <!-- Earth -->
+          <circle cx="150" cy="150" r="60" fill="url(#earthGradient)"/>
+          <defs>
+            <radialGradient id="earthGradient" cx="30%" cy="30%">
+              <stop offset="0%" stop-color="#3a9bdc"/>
+              <stop offset="70%" stop-color="#0d47a1"/>
+              <stop offset="100%" stop-color="#082c6b"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Orbit path -->
+          <circle cx="150" cy="150" r="110" stroke="#19d3ff" stroke-width="1.8" fill="none" opacity="0.6"/>
+
+          <!-- Satellite -->
+          <circle id="satellite" cx="150" cy="40" r="6" fill="#7aa2ff" stroke="none">
+            <animateTransform attributeName="transform"
+              attributeType="XML"
+              type="rotate"
+              from="0 150 150"
+              to="360 150 150"
+              dur="12s"
+              repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <div class="note" id="orbit-note">(Simulated orbit around Earth)</div>
+    </div>
+
+    <!-- Position Overview -->
+    <div class="card">
+      <h2 id="position-title">Position Overview</h2>
+      <div class="grid">
+        <div>
+          <div class="value" id="lat">+12.47°</div>
+          <div class="label" id="lat-label">Latitude</div>
+        </div>
+        <div>
+          <div class="value" id="lon">-45.28°</div>
+          <div class="label" id="lon-label">Longitude</div>
+        </div>
+      </div>
+      <div class="note" id="orbit-desc">(Relative to Earth’s equator and prime meridian)</div>
+    </div>
+
+    <!-- Velocity and Altitude -->
+    <div class="card">
+      <h2 id="motion-title">Velocity & Altitude</h2>
+      <div class="grid">
+        <div>
+          <div class="value" id="velocity">7.8 km/s</div>
+          <div class="label" id="velocity-label">Orbital Velocity</div>
+          <div class="note" id="velocity-note">(Stable Earth orbit)</div>
+        </div>
+        <div>
+          <div class="value" id="altitude">520 km</div>
+          <div class="label" id="altitude-label">Altitude</div>
+          <div class="note" id="altitude-note">(Above Earth’s surface)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <h2 id="alerts-title">Alerts & Warnings</h2>
+      <div class="value" id="alert-status" style="text-align:left;">None</div>
+      <div class="label" id="alert-desc">Navigation systems operating normally.</div>
+    </div>
+
+    <a class="back-btn" href="Astrodeck Homepage.html" id="back-btn">← Back to Dashboard</a>
+  </main>
+
+  <script>
+    const translations = {
+      en:{
+        dir:"ltr",
+        title:"🧭 Navigation",
+        orbitTitle:"Orbital Path",
+        orbitNote:"(Simulated orbit around Earth)",
+        position:"Position Overview",
+        latLabel:"Latitude",
+        lonLabel:"Longitude",
+        orbitDesc:"(Relative to Earth’s equator and prime meridian)",
+        motion:"Velocity & Altitude",
+        velocityLabel:"Orbital Velocity",
+        velocityNote:"(Stable Earth orbit)",
+        altitudeLabel:"Altitude",
+        altitudeNote:"(Above Earth’s surface)",
+        alerts:"Alerts & Warnings",
+        alertDesc:"Navigation systems operating normally.",
+        back:"← Back to Dashboard",
+        none:"None"
+      },
+      fr:{
+        dir:"ltr",
+        title:"🧭 Navigation",
+        orbitTitle:"Trajectoire orbitale",
+        orbitNote:"(Orbital simulée autour de la Terre)",
+        position:"Aperçu de la position",
+        latLabel:"Latitude",
+        lonLabel:"Longitude",
+        orbitDesc:"(Par rapport à l’équateur et au méridien d’origine)",
+        motion:"Vitesse et altitude",
+        velocityLabel:"Vitesse orbitale",
+        velocityNote:"(Orbite terrestre stable)",
+        altitudeLabel:"Altitude",
+        altitudeNote:"(Au-dessus de la surface terrestre)",
+        alerts:"Alertes et avertissements",
+        alertDesc:"Les systèmes de navigation fonctionnent normalement.",
+        back:"← Retour au tableau de bord",
+        none:"Aucun"
+      },
+      es:{
+        dir:"ltr",
+        title:"🧭 Navegación",
+        orbitTitle:"Trayectoria orbital",
+        orbitNote:"(Órbita simulada alrededor de la Tierra)",
+        position:"Resumen de posición",
+        latLabel:"Latitud",
+        lonLabel:"Longitud",
+        orbitDesc:"(Relativa al ecuador y meridiano principal de la Tierra)",
+        motion:"Velocidad y altitud",
+        velocityLabel:"Velocidad orbital",
+        velocityNote:"(Órbita terrestre estable)",
+        altitudeLabel:"Altitud",
+        altitudeNote:"(Sobre la superficie terrestre)",
+        alerts:"Alertas y advertencias",
+        alertDesc:"Los sistemas de navegación funcionan normalmente.",
+        back:"← Volver al panel",
+        none:"Ninguno"
+      },
+      ar:{
+        dir:"rtl",
+        title:"🧭 الملاحة",
+        orbitTitle:"المسار المداري",
+        orbitNote:"(مدار محاكى حول الأرض)",
+        position:"نظرة عامة على الموقع",
+        latLabel:"خط العرض",
+        lonLabel:"خط الطول",
+        orbitDesc:"(بالنسبة لخط الاستواء وخط الطول الرئيسي للأرض)",
+        motion:"السرعة والارتفاع",
+        velocityLabel:"السرعة المدارية",
+        velocityNote:"(مدار مستقر حول الأرض)",
+        altitudeLabel:"الارتفاع",
+        altitudeNote:"(فوق سطح الأرض)",
+        alerts:"التنبيهات والتحذيرات",
+        alertDesc:"أنظمة الملاحة تعمل بشكل طبيعي.",
+        back:"← العودة إلى لوحة التحكم",
+        none:"لا شيء"
+      }
+    };
+
+    function applyTheme(theme){
+  if(theme === "light"){
+    document.body.setAttribute("data-theme","light");
+    document.body.style.background = "var(--bg-light)";
+    document.body.style.color = "var(--text-light)";
+    document.querySelectorAll('.card').forEach(c=>{
+      c.style.background = "var(--card-light)";
+      c.style.color = "var(--text-light)";
+      c.style.border = "1px solid #d1d5db";
+    });
+    document.querySelectorAll('.label,.note').forEach(el=> el.style.color="var(--muted-light)");
+    // orbit ring & planet brightness
+    document.querySelectorAll('.orbit-svg circle[stroke]').forEach(el=>{
+      el.setAttribute("stroke","#7aa2ff");
+    });
+  } else {
+    document.body.setAttribute("data-theme","dark");
+    document.body.style.background = "var(--bg-dark)";
+    document.body.style.color = "var(--text-dark)";
+    document.querySelectorAll('.card').forEach(c=>{
+      c.style.background = "var(--card-dark)";
+      c.style.color = "var(--text-dark)";
+      c.style.border = "1px solid rgba(255,255,255,0.08)";
+    });
+    document.querySelectorAll('.label,.note').forEach(el=> el.style.color="var(--muted-dark)");
+    document.querySelectorAll('.orbit-svg circle[stroke]').forEach(el=>{
+      el.setAttribute("stroke","#19d3ff");
+    });
+  }
+}
+
+
+    function applyLanguage(lang){
+      const L = translations[lang] || translations.en;
+      document.documentElement.setAttribute("dir", L.dir);
+      document.documentElement.setAttribute("lang", lang);
+
+      document.getElementById("title").textContent = L.title;
+      document.getElementById("orbit-title").textContent = L.orbitTitle;
+      document.getElementById("orbit-note").textContent = L.orbitNote;
+      document.getElementById("position-title").textContent = L.position;
+      document.getElementById("lat-label").textContent = L.latLabel;
+      document.getElementById("lon-label").textContent = L.lonLabel;
+      document.getElementById("orbit-desc").textContent = L.orbitDesc;
+      document.getElementById("motion-title").textContent = L.motion;
+      document.getElementById("velocity-label").textContent = L.velocityLabel;
+      document.getElementById("velocity-note").textContent = L.velocityNote;
+      document.getElementById("altitude-label").textContent = L.altitudeLabel;
+      document.getElementById("altitude-note").textContent = L.altitudeNote;
+      document.getElementById("alerts-title").textContent = L.alerts;
+      document.getElementById("alert-desc").textContent = L.alertDesc;
+      document.getElementById("back-btn").textContent = L.back;
+
+      const st = document.getElementById("alert-status");
+      st.textContent = L.none;
+      st.style.textAlign = (L.dir === "rtl") ? "right" : "left";
+    }
+
+    (function init(){
+      const lang = localStorage.getItem("language") || "en";
+      const theme = localStorage.getItem("theme") || "dark";
+      applyTheme(theme);
+      applyLanguage(lang);
+    })();
+  </script>
+</body>
+</html>
